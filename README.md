@@ -19,16 +19,18 @@
 
 # Database - (SQLite):
 
-- group_table:
+- groups_table:
     - id - int
     - name - text
     - card_color - text
 
-- item:
+- expanses:
     - id - int
     - name - text
     - price - double
+    - payment_method - text
     - date - text
+    - group_id - int (Foreign Key)
 
 # Dart/Flutter:
 

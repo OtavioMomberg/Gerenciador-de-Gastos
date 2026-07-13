@@ -6,7 +6,6 @@ import 'package:gerenciador_gastos_v2/database/db_columns_info.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-
 typedef RawQuery = List<Map<String, dynamic>>;
 
 class DB {

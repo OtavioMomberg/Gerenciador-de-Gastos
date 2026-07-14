@@ -13,11 +13,19 @@ class DatabaseService {
 
   late Future<List<GroupRead>> groups;
 
-  Future<void> selectGroups() async {
+  void selectGroups() {
     groups = database.selectGroups();
   }
 
   Future<void> addGroup({required GroupWrite groupData}) async {
     await database.addGroup(groupData: groupData);
+  }
+
+  Future<void> updateGroup({required GroupWrite groupData, required int groupID}) async {
+    await database.updateGroup(groupData: groupData, groupID: groupID);
+  }
+
+  Future<void> deleteGroup({required int groupID}) async {
+    await database.deleteGroup(groupID: groupID);
   }
 }

@@ -4,6 +4,7 @@ typedef Controllers = List<TextEditingController>;
 
 class TextControllers {
   // GROUP TEXT CONTROLLERS
+  final TextEditingController groupID = TextEditingController();
   final TextEditingController groupName = TextEditingController();
   final TextEditingController groupColor = TextEditingController();
 
@@ -32,6 +33,7 @@ class TextControllers {
   void getGroupControllers() {
     groupsList.clear();
 
+    groupsList.add(groupID);
     groupsList.add(groupName);
     groupsList.add(groupColor);
   }

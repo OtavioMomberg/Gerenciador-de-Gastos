@@ -19,7 +19,9 @@ class DB {
 
   // CHECK IF DATABASE IS CREATED
   Future<Database> get database async {
-    if (_db != null) { return _db!; }
+    if (_db != null) {
+      return _db!;
+    }
     _db = await createDatabase();
     return _db!;
   }
@@ -59,7 +61,7 @@ class DB {
               ON DELETE CASCADE
           )
         ''');
-      }
+      },
     );
     return database;
   }
@@ -70,20 +72,17 @@ class DB {
 
   Future<void> addGroup({required GroupWrite groupData}) async {
     final db = await database;
-    
+
     try {
-      await db.insert(
-        DbColumnsInfo.groupTableName,
-        {
-          DbColumnsInfo.nameGroupTable : groupData.name,
-          DbColumnsInfo.colorGroupTable: groupData.color
-        }
-      );
-    } catch(error) {
+      await db.insert(DbColumnsInfo.groupTableName, {
+        DbColumnsInfo.nameGroupTable: groupData.name,
+        DbColumnsInfo.colorGroupTable: groupData.color,
+      });
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
- 
+
   Future<List<GroupRead>> selectGroups() async {
     final db = await database;
     final RawQuery query;
@@ -91,11 +90,15 @@ class DB {
     try {
       query = await db.query(DbColumnsInfo.groupTableName);
 
-      if (query.isEmpty) { return []; }
-      
-      final groups = query.map((group) => GroupRead.fromMap(map: group)).toList();
+      if (query.isEmpty) {
+        return [];
+      }
+
+      final groups = query
+          .map((group) => GroupRead.fromMap(map: group))
+          .toList();
       return groups;
-    } catch(error) {
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
@@ -107,49 +110,55 @@ class DB {
     try {
       query = await db.query(
         DbColumnsInfo.groupTableName,
-        where: "$DbColumnsInfo.nameGroupTable = ?",
-        whereArgs: [name] 
+        where: "${DbColumnsInfo.nameGroupTable} = ?",
+        whereArgs: [name],
       );
 
-      if (query.isEmpty) { return null; }
+      if (query.isEmpty) {
+        return null;
+      }
 
       final group = query.map((group) => GroupRead.fromMap(map: group)).first;
       return group;
-    } catch(error) {
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
 
-  Future<void> updateGroup({required GroupWrite groupData, required int id}) async {
+  Future<void> updateGroup({required GroupWrite groupData, required int groupID}) async {
     final db = await database;
 
     try {
       final response = await db.update(
         DbColumnsInfo.groupTableName,
         {
-          DbColumnsInfo.nameGroupTable : groupData.name,
-          DbColumnsInfo.colorGroupTable: groupData.color
+          DbColumnsInfo.nameGroupTable: groupData.name,
+          DbColumnsInfo.colorGroupTable: groupData.color,
         },
-        where: "$DbColumnsInfo.idGroupTable = ?",
-        whereArgs: [id]
+        where: "${DbColumnsInfo.idGroupTable} = ?",
+        whereArgs: [groupID],
       );
-      if (response == 0) { throw Exception("Grupo não encontrado."); }
-    } catch(error) {
+      if (response == 0) {
+        throw Exception("Grupo não encontrado.");
+      }
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
 
   Future<void> deleteGroup({required int groupID}) async {
     final db = await database;
-    
+
     try {
       final response = await db.delete(
         DbColumnsInfo.groupTableName,
-        where: "$DbColumnsInfo.idGroupTable = ?",
-        whereArgs: [groupID]
+        where: "${DbColumnsInfo.idGroupTable} = ?",
+        whereArgs: [groupID],
       );
-      if (response == 0) { throw Exception("Grupo não encontrado."); }
-    } catch(error) {
+      if (response == 0) {
+        throw Exception("Grupo não encontrado.");
+      }
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
@@ -162,17 +171,14 @@ class DB {
     final db = await database;
 
     try {
-      await db.insert(
-        DbColumnsInfo.expenseTableName, 
-        {
-          DbColumnsInfo.nameExpenseTable : expenseData.name,
-          DbColumnsInfo.priceExpenseTable : expenseData.price,
-          DbColumnsInfo.paymentMethodExpenseTable : expenseData.paymentMethod,
-          DbColumnsInfo.dateExpenseTable : expenseData.date,
-          DbColumnsInfo.groupIdExpenseTable : expenseData.groupID 
-        }
-      );
-    } catch(error) {
+      await db.insert(DbColumnsInfo.expenseTableName, {
+        DbColumnsInfo.nameExpenseTable: expenseData.name,
+        DbColumnsInfo.priceExpenseTable: expenseData.price,
+        DbColumnsInfo.paymentMethodExpenseTable: expenseData.paymentMethod,
+        DbColumnsInfo.dateExpenseTable: expenseData.date,
+        DbColumnsInfo.groupIdExpenseTable: expenseData.groupID,
+      });
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
@@ -181,39 +187,46 @@ class DB {
     final db = await database;
     final RawQuery query;
 
-    try { 
+    try {
       query = await db.query(
         DbColumnsInfo.expenseTableName,
         orderBy: "${DbColumnsInfo.dateExpenseTable} DESC",
-        limit: limit
+        limit: limit,
       );
 
-      if (query.isEmpty) { return []; }
+      if (query.isEmpty) {
+        return [];
+      }
 
-      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
+      final expenses = query
+          .map((expense) => ExpenseRead.fromMap(map: expense))
+          .toList();
       return expenses;
-    } catch(error) {
+    } catch (error) {
       throw Exception(error.toString());
     }
-
   }
 
-  Future<ExpenseRead> selectExpenseByID({required int id}) async {
+  Future<ExpenseRead> selectExpenseByID({required int expenseID}) async {
     final db = await database;
     final RawQuery query;
 
     try {
       query = await db.query(
         DbColumnsInfo.expenseTableName,
-        where: "$DbColumnsInfo.idExpenseTable = ?",
-        whereArgs: [id]
+        where: "${DbColumnsInfo.idExpenseTable} = ?",
+        whereArgs: [expenseID],
       );
 
-      if (query.isEmpty) { throw Exception("Despesa não encontrada."); }
-      
-      final expense = query.map((expense) => ExpenseRead.fromMap(map: expense)).first;
+      if (query.isEmpty) {
+        throw Exception("Despesa não encontrada.");
+      }
+
+      final expense = query
+          .map((expense) => ExpenseRead.fromMap(map: expense))
+          .first;
       return expense;
-    } catch(error) {
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
@@ -225,37 +238,43 @@ class DB {
     try {
       query = await db.query(
         DbColumnsInfo.expenseTableName,
-        where: "$DbColumnsInfo.groupIdExpenseTable = ?",
-        whereArgs: [groupID]
+        where: "${DbColumnsInfo.groupIdExpenseTable} = ?",
+        whereArgs: [groupID],
       );
 
-      if (query.isEmpty) { return []; }
+      if (query.isEmpty) {
+        return [];
+      }
 
-      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
+      final expenses = query
+          .map((expense) => ExpenseRead.fromMap(map: expense))
+          .toList();
       return expenses;
-    } catch(error) {
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
 
-  Future<void> updateExpense({required ExpenseWrite expenseData, required int id}) async {
+  Future<void> updateExpense({required ExpenseWrite expenseData, required int expenseID}) async {
     final db = await database;
 
     try {
       final response = await db.update(
-        DbColumnsInfo.expenseTableName, 
+        DbColumnsInfo.expenseTableName,
         {
-          DbColumnsInfo.nameExpenseTable : expenseData.name,
-          DbColumnsInfo.priceExpenseTable : expenseData.price,
-          DbColumnsInfo.paymentMethodExpenseTable : expenseData.paymentMethod,
-          DbColumnsInfo.dateExpenseTable : expenseData.date,
-          DbColumnsInfo.groupIdExpenseTable : expenseData.groupID 
+          DbColumnsInfo.nameExpenseTable: expenseData.name,
+          DbColumnsInfo.priceExpenseTable: expenseData.price,
+          DbColumnsInfo.paymentMethodExpenseTable: expenseData.paymentMethod,
+          DbColumnsInfo.dateExpenseTable: expenseData.date,
+          DbColumnsInfo.groupIdExpenseTable: expenseData.groupID,
         },
-        where: "$DbColumnsInfo.idExpenseTable = ?",
-        whereArgs: [id]
+        where: "${DbColumnsInfo.idExpenseTable} = ?",
+        whereArgs: [expenseID],
       );
-      if (response == 0) { throw Exception("Item não encontrado."); }
-    } catch(error) {
+      if (response == 0) {
+        throw Exception("Item não encontrado.");
+      }
+    } catch (error) {
       throw Exception(error.toString());
     }
   }
@@ -266,11 +285,13 @@ class DB {
     try {
       final response = await db.delete(
         DbColumnsInfo.expenseTableName,
-        where: "$DbColumnsInfo.idExpenseTable = ?",
-        whereArgs: [expenseID]
+        where: "${DbColumnsInfo.idExpenseTable} = ?",
+        whereArgs: [expenseID],
       );
-      if (response == 0) { throw Exception("Item não encontrado."); }
-    } catch(error) {
+      if (response == 0) {
+        throw Exception("Item não encontrado.");
+      }
+    } catch (error) {
       throw Exception(error.toString());
     }
   }

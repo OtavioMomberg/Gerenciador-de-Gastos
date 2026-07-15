@@ -115,10 +115,10 @@ class _HomePageState extends State<HomePage>
                                 style: const TextStyle(
                                   color: Color.fromARGB(255, 136, 136, 136),
                                   fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                                  fontWeight: FontWeight.bold
+                                )
+                              )
+                            )
                           );
                         }
                         return ListView.separated(
@@ -139,36 +139,30 @@ class _HomePageState extends State<HomePage>
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  color: ColorConversion
-                                      .colorsMap[snapshot.data![index].color],
+                                  color: ColorConversion.colorsMap[snapshot.data![index].color],
                                   child: Center(
                                     child: Text(
                                       snapshot.data![index].name,
                                       style: const TextStyle(
-                                        color: Color.fromARGB(
-                                          255,
-                                          136,
-                                          136,
-                                          136,
-                                        ),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                        color: Color.fromARGB(255, 136, 136, 136),
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    )
+                                  )
+                                )
+                              )
                             );
-                          },
+                          }
                         );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+                      }
+                    )
+                  )
+                ]
+              )
+            ]
+          )
+        )
+      )
     );
   }
 
@@ -203,10 +197,10 @@ class _HomePageState extends State<HomePage>
 
           return SlideTransition(
             position: animation.drive(tween),
-            child: child,
+            child: child
           );
-        },
-      ),
+        }
+      )
     ).then((_) async {
       _db.selectGroups();
       setState(() {});
@@ -218,8 +212,7 @@ class _HomePageState extends State<HomePage>
     final response = await confirmDialog(
       context: context,
       title: "🚨  Atenção  🚨",
-      content:
-          "Tem certeza que deseja apagar o grupo?\n\nTodos os gastos do grupo serão apagados também.",
+      content: "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
     );
     if (response) {
       await _db.deleteGroup(groupID: groupID);
@@ -236,7 +229,7 @@ class _HomePageState extends State<HomePage>
     showColoredSnackBar(
       context: context,
       msm: "Grupo removido com sucesso!",
-      txtColor: const Color.fromARGB(255, 105, 158, 183),
+      txtColor: const Color.fromARGB(255, 255, 183, 183),
     );
   }
 

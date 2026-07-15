@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/mixins/show_error.dart';
+import 'package:gerenciador_gastos_v2/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/group_write.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
@@ -18,7 +19,7 @@ class ActionGroupPage extends StatefulWidget {
   State<ActionGroupPage> createState() => _ActionGroupPageState();
 }
 
-class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog {
+class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, ShowColoredSnackBar {
   final _controller = TextControllers.instance();
   final _color = ColorConversion.instance();
   final _db = DatabaseService.instance();
@@ -93,9 +94,16 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog {
       name: _controller.groupName.text,
       color: _controller.groupColor.text,
     );
-    widget.action == GroupOptionsEnum.criarGrupo
+    final checkAction = widget.action == GroupOptionsEnum.criarGrupo;
+    checkAction
       ? _db.addGroup(groupData: groupData)
       : _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID.text));
+
+    showColoredSnackBar(
+      context: context,
+      msm: checkAction ? "Grupo criado com sucesso!" : "Grupo atualizado com sucesso!",
+      txtColor: checkAction ? const Color.fromARGB(255, 236, 236, 237) : const Color.fromARGB(255, 210, 232, 236),
+    );
     _controller.clearGroupsList();
     Navigator.pop(context);
   }

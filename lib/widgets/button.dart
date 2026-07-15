@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 
 class Button extends StatelessWidget {
   final String label;
   final double height;
   final VoidCallback? function;
-  final void Function({required GroupOptionsEnum action})? actionPageGroupPage;
-  final GroupOptionsEnum? action;
-  
+  final void Function({required Widget page})? navigation;
+  final Widget? page;
 
   const Button({
     required this.label,
     required this.height,
     this.function,
-    this.actionPageGroupPage,
-    this.action,
+    this.navigation,
+    this.page,
     super.key,
   });
 
@@ -32,8 +30,8 @@ class Button extends StatelessWidget {
             function!();
             return;
           }
-          if (actionPageGroupPage != null) {
-            actionPageGroupPage!(action: action ?? GroupOptionsEnum.criarGrupo);
+          if (navigation != null && page != null) {
+            navigation!(page: page!);
             return;
           }
         },
@@ -41,21 +39,19 @@ class Button extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color.fromARGB(255, 210, 232, 236),
-            )
+            border: Border.all(color: const Color.fromARGB(255, 210, 232, 236)),
           ),
           child: Center(
             child: Text(
-              label, 
+              label,
               style: const TextStyle(
                 color: Color.fromARGB(255, 136, 136, 136),
-                fontWeight: FontWeight.bold
-              )
-            )
-          )
-        )
-      )
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

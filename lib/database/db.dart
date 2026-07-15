@@ -75,7 +75,7 @@ class DB {
 
     try {
       await db.insert(DbColumnsInfo.groupTableName, {
-        DbColumnsInfo.nameGroupTable: groupData.name,
+        DbColumnsInfo.nameGroupTable: groupData.name[0].toUpperCase() + groupData.name.substring(1),
         DbColumnsInfo.colorGroupTable: groupData.color,
       });
     } catch (error) {
@@ -94,9 +94,7 @@ class DB {
         return [];
       }
 
-      final groups = query
-          .map((group) => GroupRead.fromMap(map: group))
-          .toList();
+      final groups = query.map((group) => GroupRead.fromMap(map: group)).toList();
       return groups;
     } catch (error) {
       throw Exception(error.toString());
@@ -132,7 +130,7 @@ class DB {
       final response = await db.update(
         DbColumnsInfo.groupTableName,
         {
-          DbColumnsInfo.nameGroupTable: groupData.name,
+          DbColumnsInfo.nameGroupTable: groupData.name[0].toUpperCase() + groupData.name.substring(1),
           DbColumnsInfo.colorGroupTable: groupData.color,
         },
         where: "${DbColumnsInfo.idGroupTable} = ?",
@@ -246,9 +244,7 @@ class DB {
         return [];
       }
 
-      final expenses = query
-          .map((expense) => ExpenseRead.fromMap(map: expense))
-          .toList();
+      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
       return expenses;
     } catch (error) {
       throw Exception(error.toString());

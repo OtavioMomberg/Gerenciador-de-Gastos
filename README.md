@@ -48,7 +48,7 @@
 
 1. HomePage - A tela conterá botões para criar grupos, inserir novos gastos, calcular os gastos, visualizar os grupos e um campo para pesquisa
 
-2. CreateGroupPage - A tela conterá campos para a criação de um grupo
+2. ActionGroupPage - A tela conterá campos para a criação ou atualização de um grupo
 
 3. GroupPage - A tela mostrará todos os gastos contidos no grupo selecionado
 

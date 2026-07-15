@@ -1,4 +1,5 @@
 import 'package:gerenciador_gastos_v2/database/db.dart';
+import 'package:gerenciador_gastos_v2/models/expense_read.dart';
 import 'package:gerenciador_gastos_v2/models/group_read.dart';
 import 'package:gerenciador_gastos_v2/models/group_write.dart';
 
@@ -12,7 +13,9 @@ class DatabaseService {
   factory DatabaseService.instance() => _instance;
 
   late Future<List<GroupRead>> groups;
+  late List<ExpenseRead> expenses;
 
+  // GROUP ACTIONS
   void selectGroups() {
     groups = database.selectGroups();
   }
@@ -27,5 +30,11 @@ class DatabaseService {
 
   Future<void> deleteGroup({required int groupID}) async {
     await database.deleteGroup(groupID: groupID);
+  }
+
+  // EXPENSE ACTIONS
+  void selectExpensesByGroup({required int groupID}) async {
+    final expensesFuture = database.selectExpensesByGroup(groupID: groupID);
+    expenses = await expensesFuture;
   }
 }

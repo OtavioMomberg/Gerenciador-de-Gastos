@@ -12,7 +12,7 @@ class ColorConversion {
     "Colors.whiteGray", 
     "Colors.lightRed"
   ];
-
+  
   late Color cor;
 
   static final _instance = ColorConversion._();

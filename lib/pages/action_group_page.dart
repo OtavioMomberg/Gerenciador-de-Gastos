@@ -1,36 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/mixins/show_snackbar.dart';
+import 'package:gerenciador_gastos_v2/models/group_read.dart';
 import 'package:gerenciador_gastos_v2/models/group_write.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
-import 'package:gerenciador_gastos_v2/utils/text_controllers.dart';
+import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
-import 'package:gerenciador_gastos_v2/widgets/expansible_widget.dart';
+import 'package:gerenciador_gastos_v2/widgets/expansible/color/expansible_body.dart';
+import 'package:gerenciador_gastos_v2/widgets/expansible/color/expansible_header.dart';
+import 'package:gerenciador_gastos_v2/widgets/expansible/expansible_widget.dart';
 import 'package:gerenciador_gastos_v2/widgets/image_widget.dart';
 import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 
 class ActionGroupPage extends StatefulWidget {
-  final GroupOptionsEnum action;
-  const ActionGroupPage({required this.action, super.key});
+  final ActionsEnum action;
+  final GroupRead? groupData;
+  const ActionGroupPage({required this.action, this.groupData, super.key});
 
   @override
   State<ActionGroupPage> createState() => _ActionGroupPageState();
 }
 
 class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, ShowColoredSnackBar {
-  final _controller = TextControllers.instance();
+  final _controller = ControllerUtils.instance();
   final _color = ColorConversion.instance();
   final _db = DatabaseService.instance();
-  final exController = ExpansibleController();
 
   @override
   void initState() {
     super.initState();
 
-    if (_controller.groupName.text.isNotEmpty && _controller.groupColor.text.isNotEmpty) {
-      _color.cor = ColorConversion.colorsMap[_controller.groupColor.text]!;
+    initControllers();
+
+    if (widget.groupData != null && widget.action == ActionsEnum.update) {
+      getData();
+    }
+
+    if (_controller.groupName!.text.isNotEmpty && _controller.groupColor!.text.isNotEmpty) {
+      _color.cor = ColorConversion.colorsMap[_controller.groupColor!.text]!;
     } else {
       _color.cor = const Color.fromARGB(255, 234, 242, 252);
     }
@@ -42,7 +51,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 234, 242, 252),
         foregroundColor: const Color.fromARGB(255, 136, 136, 136),
-        surfaceTintColor: Colors.transparent
+        surfaceTintColor: Colors.transparent,
       ),
       backgroundColor: const Color.fromARGB(255, 234, 242, 252),
       body: Container(
@@ -55,61 +64,92 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
             spacing: 15,
             children: <Widget>[
               Text(
-                widget.action == GroupOptionsEnum.atualizarGrupo ? "Atualizar Grupo" : "Criar Grupo",
+                widget.action == ActionsEnum.update
+                    ? "Atualizar Grupo"
+                    : "Criar Grupo",
                 style: const TextStyle(
                   color: Color.fromARGB(255, 136, 136, 136),
                   fontSize: 30,
-                  fontWeight: FontWeight.bold
-                )
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
-              TextInput(controller: _controller.groupName, textHint: "Nome do grupo: Ex. Grupo"),
+              TextInput(
+                controller: _controller.groupName!,
+                textHint: "Nome do grupo: Ex. Grupo",
+              ),
               ExpansibleWidget(
-                controller: exController, 
-                setStateCallback: () => setState((){})
+                controller: _controller.expansibleColorController!,
+                header: ExpansibleHeader(
+                  controller: _controller.expansibleColorController!,
+                ),
+                body: ExpansibleBody(
+                  controller: _controller.expansibleColorController!,
+                  setStateCallback: () => setState(() {}),
+                ),
               ),
               const SizedBox(height: 20),
               Button(
-                label: widget.action == GroupOptionsEnum.atualizarGrupo 
-                  ? "Atualizar Grupo" 
-                  : "Criar Grupo", 
+                label: widget.action == ActionsEnum.update
+                    ? "Atualizar Grupo"
+                    : "Criar Grupo",
                 height: 60,
                 function: executeAction,
               ),
               const SizedBox(height: 5),
-              ImageWidget(imagePath: "assets/images/dash.png")
-            ]
-          )
-        )
-      )
+              ImageWidget(imagePath: "assets/images/dash.png"),
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+  void initControllers() {
+    _controller.getGroupControllers();
+  }
+
+  void getData() {
+    _controller.groupName!.text = widget.groupData!.name;
+    _controller.groupColor!.text = widget.groupData!.color;
+    _controller.groupID!.text = widget.groupData!.id.toString();
   }
 
   void executeAction() {
     final bool check = checkData();
 
-    if (!check) { return; }
+    if (!check) {
+      return;
+    }
 
     final groupData = GroupWrite(
-      name: _controller.groupName.text,
-      color: _controller.groupColor.text,
+      name: _controller.groupName!.text,
+      color: _controller.groupColor!.text,
     );
-    final checkAction = widget.action == GroupOptionsEnum.criarGrupo;
+    final checkAction = widget.action == ActionsEnum.create;
     checkAction
       ? _db.addGroup(groupData: groupData)
-      : _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID.text));
+      : _db.updateGroup(
+          groupData: groupData,
+          groupID: int.parse(_controller.groupID!.text),
+        );
 
     showColoredSnackBar(
       context: context,
-      msm: checkAction ? "Grupo criado com sucesso!" : "Grupo atualizado com sucesso!",
-      txtColor: checkAction ? const Color.fromARGB(255, 236, 236, 237) : const Color.fromARGB(255, 210, 232, 236),
+      msm: checkAction
+        ? "Grupo criado com sucesso!"
+        : "Grupo atualizado com sucesso!",
+      txtColor: checkAction
+        ? const Color.fromARGB(255, 236, 236, 237)
+        : const Color.fromARGB(255, 210, 232, 236),
     );
     _controller.clearGroupsList();
     Navigator.pop(context);
   }
 
   bool checkData() {
-    if (_controller.groupName.text.isEmpty && _controller.groupColor.text.isEmpty) {
+    if (_controller.groupName!.text.isEmpty &&
+        _controller.groupColor!.text.isEmpty) {
       showError(
         context: context,
         title: "⚠️  Erro  ⚠️",
@@ -118,7 +158,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
       );
       return false;
     }
-    if (!_controller.groupName.text[0].contains(RegExp("[aA-zZ]"))) {
+    if (!_controller.groupName!.text[0].contains(RegExp("[aA-zZ]"))) {
       showError(
         context: context,
         title: "⚠️  Erro  ⚠️",
@@ -135,5 +175,18 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
       return;
     }
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _controller.getGroupControllers();
+
+    if (_controller.groupsList.isNotEmpty) {
+      for (var group in _controller.groupsList) {
+        group.dispose();
+      }
+    }
+    _controller.expansibleColorController!.dispose();
+    super.dispose();
   }
 }

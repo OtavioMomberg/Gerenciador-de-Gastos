@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class TextInput extends StatelessWidget {
   final TextEditingController controller;
   final String textHint;
+  final TextInputType? inputType;
 
   const TextInput({
     required this.controller,
     required this.textHint,
+    this.inputType = TextInputType.text,
     super.key
   });
 
@@ -14,6 +16,7 @@ class TextInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      keyboardType: inputType,
       cursorColor: const Color.fromARGB(255, 136, 136, 136),
       style: const TextStyle(
         color: Color.fromARGB(255, 136, 136, 136),

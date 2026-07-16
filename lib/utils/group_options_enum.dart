@@ -1,4 +1,1 @@
-enum GroupOptionsEnum {
-  criarGrupo,
-  atualizarGrupo
-}
+enum ActionsEnum { create, update }

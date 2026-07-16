@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
-import 'package:gerenciador_gastos_v2/utils/text_controllers.dart';
+import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 
 class ExpansibleBody extends StatelessWidget {
   final ExpansibleController controller;
   final VoidCallback setStateCallback;
 
   ExpansibleBody({
-    required this.controller, 
+    required this.controller,
     required this.setStateCallback,
-    super.key
+    super.key,
   });
 
-  final _controller = TextControllers.instance();
+  final _controller = ControllerUtils.instance();
   final _color = ColorConversion.instance();
 
   @override
@@ -21,7 +21,7 @@ class ExpansibleBody extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136))
+        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
       ),
       height: 250,
       child: ListView(
@@ -33,14 +33,16 @@ class ExpansibleBody extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   _color.cor = ColorConversion.colorsMap[ColorConversion.listColors[index]]!;
-                  _controller.groupColor.text = ColorConversion.listColors[index].toString();
+                  _controller.groupColor!.text = ColorConversion.listColors[index].toString();
                   setStateCallback();
                   controller.collapse();
                 },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 136, 136, 136),
+                    ),
                     color: ColorConversion.colorsMap[ColorConversion.listColors[index]]!,
                   ),
                   height: 60,

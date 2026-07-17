@@ -7,6 +7,7 @@ import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
+import 'package:gerenciador_gastos_v2/utils/sort_image.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/color/expansible_body.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/color/expansible_header.dart';
@@ -98,11 +99,11 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
                 function: executeAction,
               ),
               const SizedBox(height: 5),
-              ImageWidget(imagePath: "assets/images/dash.png"),
-            ],
-          ),
-        ),
-      ),
+              ImageWidget(imagePath: SortImage.getImagePath()),
+            ]
+          )
+        )
+      )
     );
   }
 

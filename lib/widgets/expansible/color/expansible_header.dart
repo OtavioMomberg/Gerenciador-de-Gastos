@@ -38,10 +38,8 @@ class ExpansibleHeader extends StatelessWidget {
               child: Text(
                 _color.cor == Color.fromARGB(255, 234, 242, 252) ? "Selecione uma cor" : "",
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
-                  fontWeight: FontWeight.bold
+                  color: Color.fromARGB(255, 136, 136, 136)
                 )
-
               )
             )
           ),

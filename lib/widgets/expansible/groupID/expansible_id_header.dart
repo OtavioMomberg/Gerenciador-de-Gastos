@@ -24,24 +24,31 @@ class ExpansibleIdHeader extends StatelessWidget {
         mainAxisAlignment: .spaceEvenly,
         spacing: 10,
         children: [
-          Text(
-            expansibleVariables.groupName,
-            style: const TextStyle(
-              color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Text(
+                expansibleVariables.groupName,
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 136, 136, 136)
+                )
+              )
+            )
           ),
-          IconButton(
-            onPressed: () {
-              controller.isExpanded
-                ? controller.collapse()
-                : controller.expand();
-              setStateCallback();
-            },
-            icon: Icon(
-              controller.isExpanded ? Icons.arrow_upward : Icons.arrow_downward,
-              color: const Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold
+          Expanded(
+            child: IconButton(
+              onPressed: () {
+                controller.isExpanded
+                  ? controller.collapse()
+                  : controller.expand();
+                setStateCallback();
+              },
+              icon: Icon(
+                controller.isExpanded ? Icons.arrow_upward : Icons.arrow_downward,
+                color: const Color.fromARGB(255, 136, 136, 136),
+                fontWeight: FontWeight.bold
+              )
             )
           )
         ]

@@ -7,12 +7,15 @@ import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
+import 'package:gerenciador_gastos_v2/utils/sort_image.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/date/expansible_date_body.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/date/expansible_date_header.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/expansible_widget.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/groupID/expansible_id_body.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/groupID/expansible_id_header.dart';
+import 'package:gerenciador_gastos_v2/widgets/expansible/payment_method/expansible_payment_body.dart';
+import 'package:gerenciador_gastos_v2/widgets/expansible/payment_method/expansible_payment_header.dart';
 import 'package:gerenciador_gastos_v2/widgets/image_widget.dart';
 import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 
@@ -42,9 +45,9 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     }
 
     if (_controller.expenseGroupID!.text.isEmpty) {
-      _expansibleVariables.groupName = "Insira o nome de um grupo";
-      _expansibleVariables.groupDate = "Insira a data de vencimento";
-      _expansibleVariables.groupPayment = "Escolha o método de pagamento";
+      _expansibleVariables.groupName = ExpansibleVariables.name;
+      _expansibleVariables.groupDate = ExpansibleVariables.date;
+      _expansibleVariables.groupPayment = ExpansibleVariables.payment;
     }
 
     _expansibleVariables.buildYear(currentYear: DateTime.now().year);
@@ -84,6 +87,28 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                 textHint: "Preço:",
                 inputType: TextInputType.number
               ),
+              ExpansibleWidget(
+                controller: _controller.expansiblePaymentController!,
+                header: ExpansiblePaymentHeader(
+                  controller: _controller.expansiblePaymentController!,
+                  setStateCallback: () => setState((){})
+                ),
+                body: ExpansiblePaymentBody(
+                  controller: _controller.expansiblePaymentController!,
+                  setStateCallback: () => setState(() {})
+                )
+              ),
+              ExpansibleWidget(
+                controller: _controller.expansibleDateController!,
+                header: ExpansibleDateHeader(
+                  controller: _controller.expansibleDateController!,
+                  setStateCallback: () => setState((){})
+                ),
+                body: ExpansibleDateBody(
+                  controller: _controller.expansibleDateController!,
+                  setStateCallback: () => setState(() {})
+                )
+              ),
               if (widget.action == ActionsEnum.create)
                 ExpansibleWidget(
                   controller: _controller.expansibleGroupIDController!,
@@ -96,23 +121,12 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                     setStateCallback: () => setState(() {})
                   )
                 ),
-              ExpansibleWidget(
-                controller: _controller.expansibleDateController!,
-                header: ExpansibleDateHeader(
-                  controller: _controller.expansibleDateController!,
-                  setStateCallback: () => setState((){})
-                ),
-                body: ExpansibleDateBody(
-                  controller: _controller.expansibleDateController!,
-                  setStateCallback: () => setState(() {})
-                )
-              ),
               Button(
                 label: "Adicionar", 
                 height: 60,
                 function: addExpense
               ),
-              ImageWidget(imagePath: "assets/images/dash.png")
+              ImageWidget(imagePath: SortImage.getImagePath())
             ]
           )
         )

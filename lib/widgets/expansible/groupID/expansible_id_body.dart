@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
-import 'package:gerenciador_gastos_v2/utils/expansible_variables_expense_page.dart';
+import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 
 class ExpansibleIdBody extends StatelessWidget {
   final ExpansibleController controller;
   final VoidCallback setStateCallback;
-  
+
   ExpansibleIdBody({
     required this.controller,
     required this.setStateCallback,
-    super.key
+    super.key,
   });
 
   final _controller = ControllerUtils.instance();
   final _db = DatabaseService.instance();
-  final expansibleVariables = ExpansibleVariablesExpensePage.instance();
+  final expansibleVariables = ExpansibleVariables.instance();
 
   @override
   Widget build(BuildContext context) {

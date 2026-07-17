@@ -132,20 +132,16 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () {
-                                _db.selectExpensesByGroup(
-                                  groupID: snapshot.data![index].id,
-                                );
+                                _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
                                 navigation(page: GroupPage());
                               },
                               onLongPress: () => navigation(
                                 page: ActionGroupPage(
                                   action: ActionsEnum.update,
-                                  groupData: snapshot.data![index],
-                                ),
+                                  groupData: snapshot.data![index]
+                                )
                               ),
-                              onDoubleTap: () async => await deleteProcess(
-                                groupID: snapshot.data![index].id,
-                              ),
+                              //onDoubleTap: () async => await deleteProcess(groupID: snapshot.data![index].id),
                               child: SizedBox(
                                 width: (size.width - 30) * 0.5,
                                 child: Card(
@@ -209,8 +205,6 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
       _db.selectGroups();
       setState(() {});
     });
-    textControllers.clearGroupsList();
-    textControllers.clearExpensesList();
   }
 
   Future<void> deleteProcess({required int groupID}) async {
@@ -235,7 +229,7 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
     showColoredSnackBar(
       context: context,
       msm: "Grupo removido com sucesso!",
-      txtColor: const Color.fromARGB(255, 255, 183, 183),
+      txtColor: const Color.fromARGB(255, 210, 232, 236),
     );
   }
 }

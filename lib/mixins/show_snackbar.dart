@@ -18,9 +18,9 @@ mixin ShowColoredSnackBar {
             )
           )
         ),
-        backgroundColor: txtColor,
+        backgroundColor: txtColor.withValues(alpha: 0.9),
         shape: StadiumBorder(
-          side: BorderSide(color: txtColor.withValues(alpha: 0.7)),
+          side: BorderSide(color: txtColor.withValues(alpha: 0.7))
         ),
         duration: const Duration(seconds: 2)
       )

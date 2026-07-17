@@ -37,6 +37,7 @@ class ControllerUtils {
     expensesList.add(expensePaymentMethod = TextEditingController());
     expensesList.add(expenseDate = TextEditingController());
     expensesList.add(expenseGroupID = TextEditingController());
+
     expansibleDateController = ExpansibleController();
     expansiblePaymentController = ExpansibleController();
     expansibleGroupIDController = ExpansibleController();
@@ -48,18 +49,7 @@ class ControllerUtils {
     groupsList.add(groupID = TextEditingController());
     groupsList.add(groupName = TextEditingController());
     groupsList.add(groupColor = TextEditingController());
+    
     expansibleColorController = ExpansibleController();
-  }
-
-  void clearExpensesList() {
-    for (var expense in expensesList) {
-      expense.clear();
-    }
-  }
-
-  void clearGroupsList() {
-    for (var group in groupsList) {
-      group.clear();
-    }
   }
 }

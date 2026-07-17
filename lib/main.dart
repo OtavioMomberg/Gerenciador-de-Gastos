@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'Gerenciador de Gastos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: const Color.fromARGB(255, 210, 232, 236)),
       ),
       home: const HomePage(),
     );

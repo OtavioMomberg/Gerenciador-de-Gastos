@@ -82,6 +82,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
                 controller: _controller.expansibleColorController!,
                 header: ExpansibleHeader(
                   controller: _controller.expansibleColorController!,
+                  setStateCallback: () => setState((){}),
                 ),
                 body: ExpansibleBody(
                   controller: _controller.expansibleColorController!,
@@ -129,27 +130,21 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
     final checkAction = widget.action == ActionsEnum.create;
     checkAction
       ? _db.addGroup(groupData: groupData)
-      : _db.updateGroup(
-          groupData: groupData,
-          groupID: int.parse(_controller.groupID!.text),
-        );
+      : _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID!.text));
 
     showColoredSnackBar(
       context: context,
       msm: checkAction
         ? "Grupo criado com sucesso!"
         : "Grupo atualizado com sucesso!",
-      txtColor: checkAction
-        ? const Color.fromARGB(255, 236, 236, 237)
-        : const Color.fromARGB(255, 210, 232, 236),
+      txtColor: const Color.fromARGB(255, 210, 232, 236)
     );
-    _controller.clearGroupsList();
+
     Navigator.pop(context);
   }
 
   bool checkData() {
-    if (_controller.groupName!.text.isEmpty &&
-        _controller.groupColor!.text.isEmpty) {
+    if (_controller.groupName!.text.isEmpty && _controller.groupColor!.text.isEmpty) {
       showError(
         context: context,
         title: "⚠️  Erro  ⚠️",

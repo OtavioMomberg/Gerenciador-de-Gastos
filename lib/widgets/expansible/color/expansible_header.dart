@@ -3,8 +3,13 @@ import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 
 class ExpansibleHeader extends StatelessWidget {
   final ExpansibleController controller;
+  final VoidCallback setStateCallback;
 
-  ExpansibleHeader({required this.controller, super.key});
+  ExpansibleHeader({
+    required this.controller, 
+    required this.setStateCallback,
+    super.key
+  });
 
   final _color = ColorConversion.instance();
 
@@ -45,6 +50,7 @@ class ExpansibleHeader extends StatelessWidget {
               controller.isExpanded
                 ? controller.collapse()
                 : controller.expand();
+              setStateCallback();
             },
             icon: Icon(
               controller.isExpanded

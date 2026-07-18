@@ -102,15 +102,15 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
                     style: TextStyle(
                       color: Color.fromARGB(255, 136, 136, 136),
                       fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
+                      fontWeight: FontWeight.bold
+                    )
                   ),
                   SizedBox(
                     height: size.height * 0.35,
                     child: FutureBuilder(
                       future: _db.groups,
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
                           return Card(
                             color: const Color.fromARGB(255, 210, 232, 236),
                             child: Center(
@@ -132,8 +132,13 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () {
-                                _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
-                                navigation(page: GroupPage());
+                                //_db.selectExpensesByGroup(groupID: snapshot.data![index].id);
+                                _db.selectExpensesByDate(
+                                  groupID: snapshot.data![index].id, 
+                                  month: DateTime.now().month.toString(), 
+                                  year: DateTime.now().year.toString()
+                                );
+                                navigation(page: GroupPage(groupID: snapshot.data![index].id));
                               },
                               onLongPress: () => navigation(
                                 page: ActionGroupPage(

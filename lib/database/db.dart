@@ -56,6 +56,7 @@ class DB {
             ${DbColumnsInfo.paymentMethodExpenseTable} TEXT NOT NULL,
             ${DbColumnsInfo.dateExpenseTable} TEXT NOT NULL,
             ${DbColumnsInfo.groupIdExpenseTable} INTEGER NOT NULL, 
+            ${DbColumnsInfo.installmentExpenseTable} INTEGER NOT NULL DEFAULT 1,
             FOREIGN KEY (${DbColumnsInfo.groupIdExpenseTable})
               REFERENCES ${DbColumnsInfo.groupTableName}(${DbColumnsInfo.idGroupTable})
               ON DELETE CASCADE
@@ -174,6 +175,7 @@ class DB {
         DbColumnsInfo.priceExpenseTable: expenseData.price,
         DbColumnsInfo.paymentMethodExpenseTable: expenseData.paymentMethod,
         DbColumnsInfo.dateExpenseTable: expenseData.date,
+        DbColumnsInfo.installmentExpenseTable: expenseData.installments,
         DbColumnsInfo.groupIdExpenseTable: expenseData.groupID,
       });
     } catch (error) {
@@ -196,9 +198,35 @@ class DB {
         return [];
       }
 
-      final expenses = query
-          .map((expense) => ExpenseRead.fromMap(map: expense))
-          .toList();
+      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
+      return expenses;
+    } catch (error) {
+      throw Exception(error.toString());
+    }
+  }
+
+  Future<List<ExpenseRead>> selectExpenseByDate({
+    required int groupID, 
+    required String month, 
+    required String year
+  }) async {
+    final db = await database;
+    final RawQuery query;
+
+    final String date = "$month/$year";
+
+    try {
+      query = await db.query(
+        DbColumnsInfo.expenseTableName,
+        where: "${DbColumnsInfo.groupIdExpenseTable} = ? AND ${DbColumnsInfo.dateExpenseTable} LIKE ?",
+        whereArgs: [groupID, "%$date"],
+      );
+
+      if (query.isEmpty) {
+        return [];
+      }
+
+      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
       return expenses;
     } catch (error) {
       throw Exception(error.toString());
@@ -265,7 +293,7 @@ class DB {
           DbColumnsInfo.groupIdExpenseTable: expenseData.groupID,
         },
         where: "${DbColumnsInfo.idExpenseTable} = ?",
-        whereArgs: [expenseID],
+        whereArgs: [expenseID]
       );
       if (response == 0) {
         throw Exception("Item não encontrado.");

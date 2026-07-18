@@ -41,6 +41,15 @@ class DatabaseService {
     expenses = await expensesFuture;
   }
 
+  void selectExpensesByDate({
+    required int groupID, 
+    required String month, 
+    required String year
+  }) async {
+    final expensesFuture = database.selectExpenseByDate(groupID: groupID, month: month, year: year);
+    expenses = await expensesFuture;
+  }
+
   Future<void> addExpense({required ExpenseWrite expenseData}) async {
     await database.addExpense(expenseData: expenseData);
   }

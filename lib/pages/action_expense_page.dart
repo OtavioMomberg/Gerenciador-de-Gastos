@@ -7,7 +7,6 @@ import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
-import 'package:gerenciador_gastos_v2/utils/sort_image.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/date/expansible_date_body.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/date/expansible_date_header.dart';
@@ -16,7 +15,6 @@ import 'package:gerenciador_gastos_v2/widgets/expansible/groupID/expansible_id_b
 import 'package:gerenciador_gastos_v2/widgets/expansible/groupID/expansible_id_header.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/payment_method/expansible_payment_body.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/payment_method/expansible_payment_header.dart';
-import 'package:gerenciador_gastos_v2/widgets/image_widget.dart';
 import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 
 class ActionExpensePage extends StatefulWidget {
@@ -125,8 +123,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                 label: "Adicionar", 
                 height: 60,
                 function: addExpense
-              ),
-              ImageWidget(imagePath: SortImage.getImagePath())
+              )
             ]
           )
         )
@@ -163,27 +160,35 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     return true;
   }
 
-  void addExpense() {
+  void addExpense() async {
     if (checkFields()) {
+      final int installments = _controller.expenseInstallment!.text.isEmpty 
+        ? 1
+        : int.parse(_controller.expenseInstallment!.text);
+
       final expenseData = ExpenseWrite(
         name: _controller.expenseName!.text, 
         price: _controller.expensePrice!.text, 
         paymentMethod: _controller.expensePaymentMethod!.text, 
         date: _controller.expenseDate!.text, 
+        installments: installments,
         groupID: int.parse(_controller.expenseGroupID!.text)
       );
 
       final check = widget.action == ActionsEnum.create;
-      check
-        ? _db.database.addExpense(expenseData: expenseData)
-        : _db.database.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
 
-      showColoredSnackBar(
-        context: context, 
-        msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
-        txtColor: const Color.fromARGB(255, 210, 232, 236)
-      );
-      Navigator.pop(context);
+      if (check) {
+        int day = int.parse(expenseData.date.substring(0, 2));
+
+        for (int i=0; i<installments; i++) {
+          await _db.database.addExpense(expenseData: expenseData);
+          expenseData.increaseMonth(day: day);
+          expenseData.decreaseInstallment();
+        }
+      } else {
+        _db.database.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+      }
+      showSnackBar(check: check);
       return;
     }
     showError(
@@ -192,6 +197,15 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
       content: "Campos não preenchidos.", 
       closeDialog: closeDialog
     );
+  }
+
+  void showSnackBar({required bool check}) {
+   showColoredSnackBar(
+    context: context, 
+    msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
+    txtColor: const Color.fromARGB(255, 210, 232, 236)
+    );
+    Navigator.pop(context); 
   }
 
   void closeDialog() {

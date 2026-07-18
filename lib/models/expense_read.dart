@@ -6,6 +6,7 @@ class ExpenseRead {
   final String price;
   final String paymentMethod;
   final String date;
+  final int? installments;
   final int groupID;
 
   const ExpenseRead({
@@ -14,6 +15,7 @@ class ExpenseRead {
     required this.price, 
     required this.paymentMethod,
     required this.date,
+    this.installments = 1,
     required this.groupID
   });
 
@@ -24,11 +26,10 @@ class ExpenseRead {
       price: map[DbColumnsInfo.priceExpenseTable] as String, 
       paymentMethod: map[DbColumnsInfo.paymentMethodExpenseTable] as String, 
       date: map[DbColumnsInfo.dateExpenseTable] as String, 
+      installments: map[DbColumnsInfo.installmentExpenseTable] as int,
       groupID: map[DbColumnsInfo.groupIdExpenseTable] as int
     );
   }
 
   double? get priceAsDouble => double.tryParse(price);
-
-  DateTime? get dateTime => DateTime.tryParse(date);
 }

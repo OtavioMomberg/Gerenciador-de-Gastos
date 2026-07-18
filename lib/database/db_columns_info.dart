@@ -11,5 +11,6 @@ class DbColumnsInfo {
   static final String priceExpenseTable = "price";
   static final String paymentMethodExpenseTable = "payment_method";
   static final String dateExpenseTable = "date";
+  static final String installmentExpenseTable = "installment";
   static final String groupIdExpenseTable = "group_id";
 }

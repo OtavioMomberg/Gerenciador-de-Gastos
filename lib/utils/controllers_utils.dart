@@ -14,6 +14,7 @@ class ControllerUtils {
   TextEditingController? expensePrice;
   TextEditingController? expensePaymentMethod;
   TextEditingController? expenseDate;
+  TextEditingController? expenseInstallment;
   TextEditingController? expenseGroupID;
 
   // EXPANSIBLE CONTROLLERS
@@ -36,6 +37,7 @@ class ControllerUtils {
     expensesList.add(expensePrice = TextEditingController());
     expensesList.add(expensePaymentMethod = TextEditingController());
     expensesList.add(expenseDate = TextEditingController());
+    expensesList.add(expenseInstallment = TextEditingController());
     expensesList.add(expenseGroupID = TextEditingController());
 
     expansibleDateController = ExpansibleController();

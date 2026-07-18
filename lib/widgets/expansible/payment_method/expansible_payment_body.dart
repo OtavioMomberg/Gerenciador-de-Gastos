@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
+import 'package:gerenciador_gastos_v2/widgets/button.dart';
+import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 
 class ExpansiblePaymentBody extends StatelessWidget {
   final ExpansibleController controller;
@@ -36,6 +38,9 @@ class ExpansiblePaymentBody extends StatelessWidget {
                     _controller.expensePaymentMethod!.text = _expansibleVariables.paymentMethods[index];
                     controller.collapse();
                     setStateCallback();
+                    if (_expansibleVariables.paymentMethods[index] == "Crédito") {
+                      setInstallments(context: context);
+                    }
                   },
                   title: Center(
                     child: Text(
@@ -51,10 +56,46 @@ class ExpansiblePaymentBody extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)
                   )
                 )
-              ),
+              )
             );
           })
         ]
+      )
+    );
+  }
+
+  void setInstallments({required BuildContext context}) {
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        title: Center(
+          child: const Text(
+            "Parcelas",
+            style: TextStyle(
+              color: Color.fromARGB(255, 136, 136, 136),
+              fontWeight: FontWeight.bold
+            )
+          )
+        ),
+        content: Column(
+          mainAxisSize: .min,
+          spacing: 10,
+          children: <Widget>[
+            TextInput(
+              controller: _controller.expenseInstallment!, 
+              textHint: "Número de parcelas:",
+              inputType: TextInputType.number
+            ),
+            const SizedBox(height: 10),
+            Button(
+              label: "Confirmar", 
+              height: 60,
+              function: () => Navigator.pop(context)
+            )
+          ]
+        )
       )
     );
   }

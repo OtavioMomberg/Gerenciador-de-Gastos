@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/mixins/show_error.dart';
-import 'package:gerenciador_gastos_v2/mixins/show_snackbar.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/group_read.dart';
 import 'package:gerenciador_gastos_v2/models/group_write.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';

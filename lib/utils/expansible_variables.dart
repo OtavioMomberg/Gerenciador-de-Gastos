@@ -1,7 +1,5 @@
 enum ListOption { days, months, years }
 
-enum PaymentOptions { debito, credito, pix }
-
 class ExpansibleVariables {
   static final _instance = ExpansibleVariables._();
   ExpansibleVariables._();

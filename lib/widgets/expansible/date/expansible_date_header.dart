@@ -11,7 +11,7 @@ class ExpansibleDateHeader extends StatelessWidget {
     super.key
   });
 
-  final expansibleVariables = ExpansibleVariables.instance();
+  final _expansibleVariables = ExpansibleVariables.instance();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class ExpansibleDateHeader extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(left: 15),
               child: Text(
-                expansibleVariables.groupDate,
+                _expansibleVariables.groupDate,
                 style: const TextStyle(
                   color: Color.fromARGB(255, 136, 136, 136)
                 )

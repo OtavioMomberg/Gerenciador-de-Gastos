@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/mixins/confirmation_dialog.dart';
-import 'package:gerenciador_gastos_v2/mixins/show_snackbar.dart';
+import 'package:gerenciador_gastos_v2/routes/app_routes.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_group_page.dart';
 import 'package:gerenciador_gastos_v2/pages/group_page.dart';
@@ -131,9 +132,8 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
                           separatorBuilder: (_, _) => const SizedBox(width: 10),
                           itemBuilder: (context, index) {
                             return InkWell(
-                              onTap: () {
-                                //_db.selectExpensesByGroup(groupID: snapshot.data![index].id);
-                                _db.selectExpensesByDate(
+                              onTap: () async {
+                                await _db.selectExpensesByDate(
                                   groupID: snapshot.data![index].id, 
                                   month: DateTime.now().month.toString(), 
                                   year: DateTime.now().year.toString()
@@ -188,24 +188,7 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
   Future<void> navigation({required Widget page}) async {
     await Navigator.push(
       context,
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => page,
-        transitionsBuilder: (_, animation, _, child) {
-          final begin = Offset(0.0, 1.0);
-          final end = Offset.zero;
-          final curve = Curves.easeInOut;
-
-          final tween = Tween(
-            begin: begin,
-            end: end,
-          ).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-      ),
+      AppRoutes.dynamicRoute(page: page),
     ).then((_) async {
       _db.selectGroups();
       setState(() {});
@@ -216,8 +199,7 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
     final response = await confirmDialog(
       context: context,
       title: "🚨  Atenção  🚨",
-      content:
-          "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
+      content: "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
     );
     if (response) {
       await _db.deleteGroup(groupID: groupID);

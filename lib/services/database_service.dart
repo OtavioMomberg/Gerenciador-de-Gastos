@@ -36,12 +36,12 @@ class DatabaseService {
   }
 
   // EXPENSE ACTIONS
-  void selectExpensesByGroup({required int groupID}) async {
+  Future<void> selectExpensesByGroup({required int groupID}) async {
     final expensesFuture = database.selectExpensesByGroup(groupID: groupID);
     expenses = await expensesFuture;
   }
 
-  void selectExpensesByDate({
+  Future<void> selectExpensesByDate({
     required int groupID, 
     required String month, 
     required String year

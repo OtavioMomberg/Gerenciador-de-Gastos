@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/mixins/show_error.dart';
-import 'package:gerenciador_gastos_v2/mixins/show_snackbar.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/expense_read.dart';
 import 'package:gerenciador_gastos_v2/models/expense_write.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
@@ -38,14 +38,14 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
 
     initControllers();
 
-    if (widget.expenseData != null && widget.action == ActionsEnum.update) {
+    if (widget.expenseData == null && widget.action == ActionsEnum.create) {
+      if (_controller.expenseGroupID!.text.isEmpty) {
+        _expansibleVariables.groupName = ExpansibleVariables.name;
+        _expansibleVariables.groupDate = ExpansibleVariables.date;
+        _expansibleVariables.groupPayment = ExpansibleVariables.payment;
+      }
+    } else {
       getData();
-    }
-
-    if (_controller.expenseGroupID!.text.isEmpty) {
-      _expansibleVariables.groupName = ExpansibleVariables.name;
-      _expansibleVariables.groupDate = ExpansibleVariables.date;
-      _expansibleVariables.groupPayment = ExpansibleVariables.payment;
     }
 
     _expansibleVariables.buildYear(currentYear: DateTime.now().year);
@@ -67,8 +67,9 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
           child: Column(
             spacing: 20,
             children: <Widget>[
-              const Text(
-                "Adicionar Gasto",
+              Text(
+                widget.action == ActionsEnum.update 
+                ? "Atualizar Gasto" : "Adicionar Gasto",
                 style: TextStyle(
                   color: Color.fromARGB(255, 136, 136, 136),
                   fontSize: 30,
@@ -120,7 +121,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                   )
                 ),
               Button(
-                label: "Adicionar", 
+                label: widget.action == ActionsEnum.update ? "Atualizar" : "Adicionar", 
                 height: 60,
                 function: addExpense
               )
@@ -140,6 +141,14 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     _controller.expensePrice!.text = widget.expenseData!.price;
     _controller.expensePaymentMethod!.text = widget.expenseData!.paymentMethod;
     _controller.expenseDate!.text = widget.expenseData!.date;
+    _controller.expenseGroupID!.text = widget.expenseData!.groupID.toString();
+
+    if (_controller.expensePaymentMethod!.text.isNotEmpty) {
+      _expansibleVariables.groupPayment = _controller.expensePaymentMethod!.text;
+    }
+    if (_controller.expenseDate!.text.isNotEmpty) {
+      _expansibleVariables.groupDate = _controller.expenseDate!.text;
+    }
   }
 
   bool checkFields() {
@@ -181,12 +190,13 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
         int day = int.parse(expenseData.date.substring(0, 2));
 
         for (int i=0; i<installments; i++) {
-          await _db.database.addExpense(expenseData: expenseData);
+          await _db.addExpense(expenseData: expenseData);
           expenseData.increaseMonth(day: day);
           expenseData.decreaseInstallment();
         }
       } else {
-        _db.database.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+        await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+        await _db.selectExpensesByGroup(groupID: widget.expenseData!.groupID);
       }
       showSnackBar(check: check);
       return;
@@ -206,6 +216,9 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     txtColor: const Color.fromARGB(255, 210, 232, 236)
     );
     Navigator.pop(context); 
+
+    if (!mounted) { return; }
+    setState(() {});
   }
 
   void closeDialog() {

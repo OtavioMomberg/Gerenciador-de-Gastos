@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/routes/app_routes.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
@@ -18,7 +18,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColoredSnackBar {
+class _HomePageState extends State<HomePage> 
+  with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
   final _db = DatabaseService.instance();
   final textControllers = ControllerUtils.instance();
 
@@ -133,18 +134,15 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () async {
-                                await _db.selectExpensesByDate(
-                                  groupID: snapshot.data![index].id, 
-                                  month: DateTime.now().month.toString(), 
-                                  year: DateTime.now().year.toString()
-                                );
-                                navigation(page: GroupPage(groupID: snapshot.data![index].id));
+                                await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
+                                navigation(page: GroupPage(groupID: snapshot.data![index].id), index: index);
                               },
                               onLongPress: () => navigation(
                                 page: ActionGroupPage(
                                   action: ActionsEnum.update,
                                   groupData: snapshot.data![index]
-                                )
+                                ),
+                                index: index
                               ),
                               //onDoubleTap: () async => await deleteProcess(groupID: snapshot.data![index].id),
                               child: SizedBox(
@@ -185,14 +183,16 @@ class _HomePageState extends State<HomePage> with ConfirmationDialog, ShowColore
     _db.selectGroups();
   }
 
-  Future<void> navigation({required Widget page}) async {
-    await Navigator.push(
-      context,
-      AppRoutes.dynamicRoute(page: page),
-    ).then((_) async {
-      _db.selectGroups();
-      setState(() {});
-    });
+  void navigation({required Widget page, int index = 0}) {
+    goNextPage(
+      context: context, 
+      index: index, 
+      page: page,
+      thenFunction: ({response}) {
+        _db.selectGroups();
+        setState(() {});
+      }
+    );
   }
 
   Future<void> deleteProcess({required int groupID}) async {

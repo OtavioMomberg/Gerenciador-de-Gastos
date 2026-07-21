@@ -19,10 +19,12 @@ class ExpenseCard extends StatelessWidget with ChangePage {
   Widget build(BuildContext context) {
     return Material(
       color: const Color.fromARGB(255, 210, 232, 236),
-      elevation: 10,
+      elevation: 5,
+      type: MaterialType.card,
       shadowColor: const Color.fromARGB(255, 210, 232, 236).withValues(alpha: 0.7),
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
+        borderRadius: BorderRadius.circular(10),
         onTap: () {
           goNextPage(
             context: context, 

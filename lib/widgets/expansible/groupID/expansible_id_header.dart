@@ -30,8 +30,10 @@ class ExpansibleIdHeader extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15),
               child: Text(
                 expansibleVariables.groupName,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136)
+                style: TextStyle(
+                  color: Color.fromARGB(255, 136, 136, 136),
+                  fontWeight: expansibleVariables.groupName != ExpansibleVariables.name
+                    ? FontWeight.bold : FontWeight.normal
                 )
               )
             )

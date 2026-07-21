@@ -30,25 +30,31 @@ class ExpansibleIdBody extends StatelessWidget {
         itemCount: _db.groupsWithoutFuture.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.all(10),
-            child: InkWell(
-              onTap: () {
-                expansibleVariables.groupName = _db.groupsWithoutFuture[index].name;
-                _controller.expenseGroupID!.text = _db.groupsWithoutFuture[index].id.toString();
-                setStateCallback();
-                controller.collapse();
-              },
-              child: Center(
-                child: Text(
-                  "${_db.groupsWithoutFuture[index].name}\n",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 136, 136, 136),
-                    fontWeight: FontWeight.bold
+            padding: const EdgeInsets.all(5),
+            child: Material(
+                child: ListTile(
+                  onTap: () {
+                    expansibleVariables.groupName = _db.groupsWithoutFuture[index].name;
+                    _controller.expenseGroupID!.text = _db.groupsWithoutFuture[index].id.toString();
+                    setStateCallback();
+                    controller.collapse();
+                  },
+                  title: Center(
+                    child: Text(
+                      _db.groupsWithoutFuture[index].name,
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 136, 136, 136),
+                        fontWeight: FontWeight.bold
+                      )
+                    )
+                  ),
+                  tileColor: const Color.fromARGB(255, 210, 232, 236),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
                   )
                 )
               )
-            )
-          );
+            );
         }
       )
     );

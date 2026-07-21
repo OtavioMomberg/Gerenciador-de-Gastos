@@ -30,8 +30,10 @@ class ExpansibleDateHeader extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15),
               child: Text(
                 _expansibleVariables.groupDate,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136)
+                style: TextStyle(
+                  color: Color.fromARGB(255, 136, 136, 136),
+                  fontWeight: _expansibleVariables.groupDate != ExpansibleVariables.date
+                    ? FontWeight.bold : FontWeight.normal
                 )
               )
             )

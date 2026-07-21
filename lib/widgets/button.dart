@@ -13,7 +13,7 @@ class Button extends StatelessWidget {
     this.function,
     this.navigation,
     this.page,
-    super.key,
+    super.key
   });
 
   @override

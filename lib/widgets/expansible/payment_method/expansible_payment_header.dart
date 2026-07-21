@@ -30,10 +30,12 @@ class ExpansiblePaymentHeader extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15),
               child: Text(
                 expansibleVariables.groupPayment,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136)
+                style: TextStyle(
+                  color: Color.fromARGB(255, 136, 136, 136),
+                  fontWeight: expansibleVariables.groupPayment != ExpansibleVariables.payment
+                    ? FontWeight.bold : FontWeight.normal
                 )
-              ),
+              )
             )
           ),
           Expanded(

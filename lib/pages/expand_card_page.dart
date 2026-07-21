@@ -5,6 +5,7 @@ import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
+import 'package:gerenciador_gastos_v2/widgets/text_button_colored.dart';
 
 class ExpandCardPage extends StatefulWidget {
   final int index;
@@ -117,41 +118,26 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
               child: Row(
                 mainAxisAlignment: .center,
                 children: <Widget>[
-                  TextButton.icon(
-                    onPressed: () {
-                      goNextPage(
-                        context: context, 
-                        index: widget.index, 
-                        page: ActionExpensePage(
-                          action: ActionsEnum.update,
-                          expenseData: _db.expenses[widget.index],
-                        )
-                      );
-                    },
-                    style: ButtonStyle(
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(10),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 136, 136, 136),
-                          ),
-                        ),
+                  TextButtonColored(
+                    icon: Icons.edit, 
+                    color: const Color.fromARGB(255, 136, 136, 136), 
+                    label: "Editar", 
+                    function: () => goNextPage(
+                      context: context, 
+                      index: widget.index, 
+                      page: ActionExpensePage(
+                        action: ActionsEnum.update,
+                        expenseData: _db.expenses[widget.index],
                       ),
-                    ),
-                    label: const Text(
-                      "Editar",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                      ),
-                    ),
-                    icon: const Icon(
-                      Icons.edit,
-                      color: Color.fromARGB(255, 136, 136, 136),
-                    ),
+                      thenFunction: thenFunction
+                    )
                   ),
                   const SizedBox(width: 10),
-                  TextButton.icon(
-                    onPressed: () async {
+                  TextButtonColored(
+                    icon: Icons.delete, 
+                    color: const Color.fromARGB(255, 255, 140, 132), 
+                    label: "Deletar", 
+                    function: () async {
                       final response = await confirmDialog(
                         context: context,
                         title: "🚨  Atenção  🚨",
@@ -163,27 +149,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         );
                         showSnackBar();
                       }
-                    },
-                    style: ButtonStyle(
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(10),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 255, 140, 132),
-                          ),
-                        ),
-                      ),
-                    ),
-                    label: const Text(
-                      "Deletar",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 140, 132),
-                      ),
-                    ),
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Color.fromARGB(255, 255, 140, 132)
-                    )
+                    }
                   )
                 ]
               )
@@ -192,6 +158,14 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
         )
       )
     );
+  }
+
+  void thenFunction({bool? response}) async {
+    if (response != null && response) {
+      await _db.selectExpensesByGroup(groupID: _db.expenses[widget.index].groupID);
+      if (!mounted) { return; }
+      setState(() {});
+    }
   }
 
   void showSnackBar() {

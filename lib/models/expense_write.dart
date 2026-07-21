@@ -15,7 +15,7 @@ const Map<int, int> daysInMonth = {
 
 class ExpenseWrite {
   final String name;
-  final String price;
+  String price;
   final String paymentMethod;
   String date;
   int? installments;

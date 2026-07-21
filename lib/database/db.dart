@@ -171,7 +171,7 @@ class DB {
 
     try {
       await db.insert(DbColumnsInfo.expenseTableName, {
-        DbColumnsInfo.nameExpenseTable: expenseData.name,
+        DbColumnsInfo.nameExpenseTable: expenseData.name[0].toUpperCase() + expenseData.name.substring(1),
         DbColumnsInfo.priceExpenseTable: expenseData.price,
         DbColumnsInfo.paymentMethodExpenseTable: expenseData.paymentMethod,
         DbColumnsInfo.dateExpenseTable: expenseData.date,
@@ -290,6 +290,7 @@ class DB {
           DbColumnsInfo.priceExpenseTable: expenseData.price,
           DbColumnsInfo.paymentMethodExpenseTable: expenseData.paymentMethod,
           DbColumnsInfo.dateExpenseTable: expenseData.date,
+          DbColumnsInfo.installmentExpenseTable: expenseData.installments ?? 1,
           DbColumnsInfo.groupIdExpenseTable: expenseData.groupID,
         },
         where: "${DbColumnsInfo.idExpenseTable} = ?",

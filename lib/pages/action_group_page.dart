@@ -66,8 +66,8 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
             children: <Widget>[
               Text(
                 widget.action == ActionsEnum.update
-                    ? "Atualizar Grupo"
-                    : "Criar Grupo",
+                  ? "Atualizar Grupo"
+                  : "Criar Grupo",
                 style: const TextStyle(
                   color: Color.fromARGB(255, 136, 136, 136),
                   fontSize: 30,
@@ -93,8 +93,8 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
               const SizedBox(height: 20),
               Button(
                 label: widget.action == ActionsEnum.update
-                    ? "Atualizar Grupo"
-                    : "Criar Grupo",
+                  ? "Atualizar Grupo"
+                  : "Criar Grupo",
                 height: 60,
                 function: executeAction,
               ),

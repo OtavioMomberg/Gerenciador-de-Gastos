@@ -192,12 +192,20 @@ class _GroupPageState extends State<GroupPage> with ErrorDialog, ChangePage {
     Navigator.pop(context);
   }
 
+  void changePage({required int index, required Widget page}) {
+    goNextPage(
+      context: context, 
+      index: index, 
+      page: page,
+      thenFunction: thenFunction
+    );
+  }
+
   void thenFunction({bool? response}) async {
-    if (response != null && response) {
       await _db.selectExpensesByGroup(groupID: widget.groupID);
       if (!mounted) { return; }
       setState(() {});
-    }
+    
   }
 
   @override

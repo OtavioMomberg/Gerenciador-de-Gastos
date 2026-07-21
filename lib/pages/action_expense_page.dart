@@ -45,7 +45,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
         _expansibleVariables.groupPayment = ExpansibleVariables.payment;
       }
     } else {
-      getData();
+      _controller.getExpenseData(expenseData: widget.expenseData!);
     }
 
     _expansibleVariables.buildYear(currentYear: DateTime.now().year);
@@ -123,7 +123,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
               Button(
                 label: widget.action == ActionsEnum.update ? "Atualizar" : "Adicionar", 
                 height: 60,
-                function: addExpense
+                function: executeAction
               )
             ]
           )
@@ -136,41 +136,8 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     _controller.getExpenseControllers();
   }
 
-  void getData() {
-    _controller.expenseName!.text = widget.expenseData!.name;
-    _controller.expensePrice!.text = widget.expenseData!.price;
-    _controller.expensePaymentMethod!.text = widget.expenseData!.paymentMethod;
-    _controller.expenseDate!.text = widget.expenseData!.date;
-    _controller.expenseGroupID!.text = widget.expenseData!.groupID.toString();
-
-    if (_controller.expensePaymentMethod!.text.isNotEmpty) {
-      _expansibleVariables.groupPayment = _controller.expensePaymentMethod!.text;
-    }
-    if (_controller.expenseDate!.text.isNotEmpty) {
-      _expansibleVariables.groupDate = _controller.expenseDate!.text;
-    }
-  }
-
-  bool checkFields() {
-    if (_controller.expenseName!.text.isEmpty) { return false; }
-    if (_controller.expensePrice!.text.isEmpty) { return false; }
-    if (_controller.expensePaymentMethod!.text.isEmpty) { return false; }
-    if (_controller.expenseDate!.text.isEmpty) { return false; }
-    if (_controller.expenseGroupID!.text.isEmpty) { return false; }
-    if (!_controller.expenseName!.text[0].contains(RegExp("[aA-zZ]"))) {
-      showError(
-        context: context,
-        title: "⚠️  Erro  ⚠️",
-        content: "O nome deve começar com uma letra.",
-        closeDialog: closeDialog,
-      );
-      return false;
-    }
-    return true;
-  }
-
-  void addExpense() async {
-    if (checkFields()) {
+  void executeAction() async {
+    if (_controller.checkExpenseFields(context: context, closeDialog: closeDialog)) {
       final int installments = _controller.expenseInstallment!.text.isEmpty 
         ? 1
         : int.parse(_controller.expenseInstallment!.text);
@@ -187,15 +154,30 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
       final check = widget.action == ActionsEnum.create;
 
       if (check) {
-        int day = int.parse(expenseData.date.substring(0, 2));
+        int firstDay = int.parse(expenseData.date.substring(0, 2));
 
         for (int i=0; i<installments; i++) {
           await _db.addExpense(expenseData: expenseData);
-          expenseData.increaseMonth(day: day);
+          expenseData.increaseMonth(day: firstDay);
           expenseData.decreaseInstallment();
         }
       } else {
-        await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+        if (expenseData.paymentMethod == "Crédito" && expenseData.installments != null) {
+          expenseData.price = (double.parse(expenseData.price) / expenseData.installments!).toStringAsFixed(2);
+          expenseData.installments = int.tryParse(_controller.expenseInstallment!.text);
+          await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+
+          int firstDay = int.parse(expenseData.date.substring(0, 2));
+
+          for (int i=0; i<installments-1; i++) {
+            expenseData.increaseMonth(day: firstDay);
+            expenseData.decreaseInstallment();
+            await _db.addExpense(expenseData: expenseData);
+            
+          }
+        } else {
+          await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
+        }
         await _db.selectExpensesByGroup(groupID: widget.expenseData!.groupID);
       }
       showSnackBar(check: check);
@@ -215,7 +197,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
     txtColor: const Color.fromARGB(255, 210, 232, 236)
     );
-    Navigator.pop(context); 
+    check ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
 
     if (!mounted) { return; }
     setState(() {});

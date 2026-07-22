@@ -54,102 +54,106 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
               ),
             ),
             Flexible(
-              child: Container(
-                height: size.height * 0.5,
-                padding: const EdgeInsets.only(
-                  top: 20,
-                  left: 10,
-                  right: 10,
-                  bottom: 10,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 136, 136, 136),
+              child: Material(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromARGB(255, 210, 232, 236),
+                elevation: 10,
+                shadowColor: const Color.fromARGB(255, 210, 232, 236),
+                child: Container(
+                  height: size.height * 0.5,
+                  padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(255, 210, 232, 236)
                   ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: <Widget>[
-                      Text(
-                        "Preço: R\$ ${_db.expenses[widget.index].price}",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 136, 136, 136),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Divider(),
-                      const SizedBox(height: 10),
-                      Text(
-                        "Forma de pagamento: ${_db.expenses[widget.index].paymentMethod}",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 136, 136, 136),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Divider(),
-                      const SizedBox(height: 10),
-                      if (_db.expenses[widget.index].paymentMethod ==
-                          "Crédito") ...[
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: <Widget>[
                         Text(
-                          "Parcelas: ${_db.expenses[widget.index].installments}",
+                          "Preço: R\$ ${_db.expenses[widget.index].price}",
                           style: TextStyle(
-                            color: const Color.fromARGB(255, 136, 136, 136),
+                            color: Color.fromARGB(255, 136, 136, 136),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const Divider(),
                         const SizedBox(height: 10),
-                      ],
-                      Text(
-                        "Data de vencimento: ${_db.expenses[widget.index].date}",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 136, 136, 136),
-                          fontWeight: FontWeight.bold
+                        Text(
+                          "Forma de pagamento: ${_db.expenses[widget.index].paymentMethod}",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 136, 136, 136),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Divider(),
+                        const SizedBox(height: 10),
+                        if (_db.expenses[widget.index].paymentMethod ==
+                            "Crédito") ...[
+                          Text(
+                            "Parcelas: ${_db.expenses[widget.index].installments}",
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 136, 136, 136),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 10),
+                        ],
+                        Text(
+                          "Data de vencimento: ${_db.expenses[widget.index].date}",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 136, 136, 136),
+                            fontWeight: FontWeight.bold
+                          )
                         )
-                      )
-                    ]
+                      ]
+                    )
                   )
                 )
               )
             ),
+            const SizedBox(height: 10),
             Flexible(
               child: Row(
                 mainAxisAlignment: .center,
                 children: <Widget>[
-                  TextButtonColored(
-                    icon: Icons.edit, 
-                    color: const Color.fromARGB(255, 136, 136, 136), 
-                    label: "Editar", 
-                    function: () => goNextPage(
-                      context: context, 
-                      index: widget.index, 
-                      page: ActionExpensePage(
-                        action: ActionsEnum.update,
-                        expenseData: _db.expenses[widget.index],
-                      ),
-                      thenFunction: thenFunction
-                    )
+                  Expanded(
+                    child: TextButtonColored(
+                      icon: Icons.edit, 
+                      color: const Color.fromARGB(255, 136, 136, 136), 
+                      label: "Editar", 
+                      function: () => goNextPage(
+                        context: context, 
+                        index: widget.index, 
+                        page: ActionExpensePage(
+                          action: ActionsEnum.update,
+                          expenseData: _db.expenses[widget.index],
+                        ),
+                        thenFunction: thenFunction
+                      )
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  TextButtonColored(
-                    icon: Icons.delete, 
-                    color: const Color.fromARGB(255, 255, 140, 132), 
-                    label: "Deletar", 
-                    function: () async {
-                      final response = await confirmDialog(
-                        context: context,
-                        title: "🚨  Atenção  🚨",
-                        content: "Tem certeza que deseja apagar esse gasto?",
-                      );
-                      if (response) {
-                        await _db.deleteExpense(
-                          expenseID: _db.expenses[widget.index].id,
+                  Expanded(
+                    child: TextButtonColored(
+                      icon: Icons.delete, 
+                      color: const Color.fromARGB(255, 255, 140, 132), 
+                      label: "Deletar", 
+                      function: () async {
+                        final response = await confirmDialog(
+                          context: context,
+                          title: "🚨  Atenção  🚨",
+                          content: "Tem certeza que deseja apagar esse gasto?",
                         );
-                        showSnackBar();
+                        if (response) {
+                          await _db.deleteExpense(
+                            expenseID: _db.expenses[widget.index].id,
+                          );
+                          showSnackBar();
+                        }
                       }
-                    }
+                    ),
                   )
                 ]
               )

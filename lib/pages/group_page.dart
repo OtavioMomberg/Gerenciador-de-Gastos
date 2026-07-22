@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/expense_card.dart';
 import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
@@ -15,7 +17,8 @@ class GroupPage extends StatefulWidget {
   State<GroupPage> createState() => _GroupPageState();
 }
 
-class _GroupPageState extends State<GroupPage> with ErrorDialog, ChangePage {
+class _GroupPageState extends State<GroupPage> 
+  with ErrorDialog, ConfirmationDialog, ShowColoredSnackBar, ChangePage {
   final _db = DatabaseService.instance();
   final month = TextEditingController();
   final year = TextEditingController();
@@ -48,10 +51,18 @@ class _GroupPageState extends State<GroupPage> with ErrorDialog, ChangePage {
             icon: Icon(
               Icons.filter_alt,
               color: const Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
+              fontWeight: FontWeight.bold
+            )
           ),
-        ],
+          IconButton(
+            onPressed: () => deleteProcess(groupID: widget.groupID), 
+            icon: const Icon(
+              Icons.delete, 
+              color: Color.fromARGB(255, 255, 140, 132), 
+              fontWeight: FontWeight.bold
+            )
+          )
+        ]
       ),
       backgroundColor: const Color.fromARGB(255, 234, 242, 252),
       body: Container(
@@ -192,6 +203,30 @@ class _GroupPageState extends State<GroupPage> with ErrorDialog, ChangePage {
     Navigator.pop(context);
   }
 
+  void deleteProcess({required int groupID}) async {
+    final response = await confirmDialog(
+      context: context,
+      title: "🚨  Atenção  🚨",
+      content: "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
+    );
+    if (response) {
+      await _db.deleteGroup(groupID: groupID);
+      _db.selectGroups();
+      showResponse();
+    }
+  }
+
+  void showResponse() {
+    if (!mounted) { return; }
+
+    showColoredSnackBar(
+      context: context,
+      msm: "Grupo removido com sucesso!",
+      txtColor: const Color.fromARGB(255, 210, 232, 236),
+    );
+    Navigator.pop(context);
+  }
+
   void changePage({required int index, required Widget page}) {
     goNextPage(
       context: context, 
@@ -205,7 +240,6 @@ class _GroupPageState extends State<GroupPage> with ErrorDialog, ChangePage {
       await _db.selectExpensesByGroup(groupID: widget.groupID);
       if (!mounted) { return; }
       setState(() {});
-    
   }
 
   @override

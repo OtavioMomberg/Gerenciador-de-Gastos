@@ -16,21 +16,34 @@ class TextButtonColored extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-      onPressed: function,
-      style: ButtonStyle(
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: color),
+    return Material(
+      elevation: 10,
+      borderRadius: BorderRadius.circular(10),
+      color: const Color.fromARGB(255, 234, 242, 252),
+      shadowColor: const Color.fromARGB(255, 234, 242, 252),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        splashColor: const Color.fromARGB(255, 210, 232, 236),
+        highlightColor: const Color.fromARGB(255, 210, 232, 236),
+        onTap: function,
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10)
           ),
-        ),
+          child: Row(
+            mainAxisAlignment: .center,
+            spacing: 10,
+            children: <Widget>[
+              Text(
+                label,
+                style: TextStyle(color: color)
+              ),
+              Icon(icon, color: color)
+            ]
+          )
+        )
       ),
-      label: Text(
-        label,
-        style: TextStyle(color: color),
-      ),
-      icon: Icon(icon, color: color)
     );
   }
 }

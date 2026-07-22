@@ -25,6 +25,8 @@ class ExpenseCard extends StatelessWidget with ChangePage {
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
+        splashColor: const Color.fromARGB(255, 234, 242, 252),
+        highlightColor: const Color.fromARGB(255, 234, 242, 252),
         onTap: () {
           goNextPage(
             context: context, 

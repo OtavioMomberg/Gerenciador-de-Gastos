@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
-import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
-import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_group_page.dart';
 import 'package:gerenciador_gastos_v2/pages/group_page.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
-import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
+import 'package:gerenciador_gastos_v2/widgets/group_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,10 +16,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> 
-  with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
+class _HomePageState extends State<HomePage> with ChangePage {
   final _db = DatabaseService.instance();
-  final textControllers = ControllerUtils.instance();
 
   @override
   void initState() {
@@ -106,7 +102,8 @@ class _HomePageState extends State<HomePage>
                       fontSize: 30,
                       fontWeight: FontWeight.bold
                     )
-                  ),
+                  ),    
+                  const SizedBox(height: 10),    
                   SizedBox(
                     height: size.height * 0.35,
                     child: FutureBuilder(
@@ -121,10 +118,10 @@ class _HomePageState extends State<HomePage>
                                 style: const TextStyle(
                                   color: Color.fromARGB(255, 136, 136, 136),
                                   fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                                  fontWeight: FontWeight.bold
+                                )
+                              )
+                            )
                           );
                         }
                         return ListView.separated(
@@ -132,38 +129,23 @@ class _HomePageState extends State<HomePage>
                           itemCount: snapshot.data!.length,
                           separatorBuilder: (_, _) => const SizedBox(width: 10),
                           itemBuilder: (context, index) {
-                            return InkWell(
+                            return GroupCard(
+                              color: ColorConversion.colorsMap[snapshot.data![index].color]!, 
+                              groupName: snapshot.data![index].name, 
+                              width: (size.width - 30) * 0.5, 
                               onTap: () async {
                                 await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
                                 navigation(page: GroupPage(groupID: snapshot.data![index].id), index: index);
-                              },
-                              onLongPress: () => navigation(
-                                page: ActionGroupPage(
-                                  action: ActionsEnum.update,
-                                  groupData: snapshot.data![index]
-                                ),
-                                index: index
-                              ),
-                              //onDoubleTap: () async => await deleteProcess(groupID: snapshot.data![index].id),
-                              child: SizedBox(
-                                width: (size.width - 30) * 0.5,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                              }, 
+                              onLongPress: () {
+                                navigation(
+                                  page: ActionGroupPage(
+                                    action: ActionsEnum.update,
+                                    groupData: snapshot.data![index]
                                   ),
-                                  color: ColorConversion
-                                      .colorsMap[snapshot.data![index].color],
-                                  child: Center(
-                                    child: Text(
-                                      snapshot.data![index].name,
-                                      style: const TextStyle(
-                                        color: Color.fromARGB(255, 136, 136, 136),
-                                        fontWeight: FontWeight.bold
-                                      )
-                                    )
-                                  )
-                                )
-                              )
+                                  index: index
+                                );
+                              }
                             );
                           }
                         );
@@ -192,31 +174,6 @@ class _HomePageState extends State<HomePage>
         _db.selectGroups();
         setState(() {});
       }
-    );
-  }
-
-  Future<void> deleteProcess({required int groupID}) async {
-    final response = await confirmDialog(
-      context: context,
-      title: "🚨  Atenção  🚨",
-      content: "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
-    );
-    if (response) {
-      await _db.deleteGroup(groupID: groupID);
-      _db.selectGroups();
-      showResponse();
-    }
-  }
-
-  void showResponse() {
-    setState(() {});
-    if (!mounted) {
-      return;
-    }
-    showColoredSnackBar(
-      context: context,
-      msm: "Grupo removido com sucesso!",
-      txtColor: const Color.fromARGB(255, 210, 232, 236),
     );
   }
 }

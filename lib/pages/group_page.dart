@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
@@ -20,6 +21,7 @@ class GroupPage extends StatefulWidget {
 class _GroupPageState extends State<GroupPage> 
   with ErrorDialog, ConfirmationDialog, ShowColoredSnackBar, ChangePage {
   final _db = DatabaseService.instance();
+  final groupService = GroupService.instance();
   final month = TextEditingController();
   final year = TextEditingController();
 
@@ -43,9 +45,7 @@ class _GroupPageState extends State<GroupPage>
           IconButton(
             onPressed: () async {
               await filter();
-              if (!mounted) {
-                return;
-              }
+              if (!mounted) { return; }
               setState(() {});
             },
             icon: Icon(
@@ -55,7 +55,15 @@ class _GroupPageState extends State<GroupPage>
             )
           ),
           IconButton(
-            onPressed: () => deleteProcess(groupID: widget.groupID), 
+            onPressed: () async {
+              final message = "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.";
+              if (await deleteProcess(message: message)) {
+                await _db.deleteGroup(groupID: widget.groupID);
+                _db.selectGroups();
+                showResponse(message: "Grupo removido com sucesso!");
+              }
+              
+            }, 
             icon: const Icon(
               Icons.delete, 
               color: Color.fromARGB(255, 255, 140, 132), 
@@ -69,8 +77,26 @@ class _GroupPageState extends State<GroupPage>
         color: const Color.fromARGB(255, 234, 242, 252),
         padding: const EdgeInsets.all(10),
         child: Column(
-          children: <Widget>[
-            const SizedBox(height: 20),
+          children: <Widget>[ 
+            IgnorePointer(
+              ignoring: groupService.isExpenseSelected ? false : true,
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                opacity: groupService.isExpenseSelected ? 1.0 : 0.0,
+                child: Button(
+                  label: "Apagar Selecionados", 
+                  height: 60,
+                  function: () async {
+                    if (await deleteProcess(message: "Tem certeza que deseja apagar esse gasto?")) {
+                      await _db.deleteSelectedExpenses(expenseID: groupService.indexList);
+                      showResponse(message: "Gastos removidos com sucesso!");
+                    }
+                  }
+                )
+              )
+            ),
+            const SizedBox(height: 10),
             if (_db.expenses.isNotEmpty) ...[
               Expanded(
                 child: ListView.builder(
@@ -80,7 +106,8 @@ class _GroupPageState extends State<GroupPage>
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: ExpenseCard(
                         index: index,
-                        thenFunction: thenFunction,
+                        setStateCallback: () => setState(() {}),
+                        thenFunction: thenFunction
                       )
                     );
                   }
@@ -203,25 +230,21 @@ class _GroupPageState extends State<GroupPage>
     Navigator.pop(context);
   }
 
-  void deleteProcess({required int groupID}) async {
+  Future<bool> deleteProcess({required String message}) async {
     final response = await confirmDialog(
       context: context,
       title: "🚨  Atenção  🚨",
-      content: "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.",
+      content: message,
     );
-    if (response) {
-      await _db.deleteGroup(groupID: groupID);
-      _db.selectGroups();
-      showResponse();
-    }
+    return response;
   }
 
-  void showResponse() {
+  void showResponse({required String message}) {
     if (!mounted) { return; }
 
     showColoredSnackBar(
       context: context,
-      msm: "Grupo removido com sucesso!",
+      msm: message,
       txtColor: const Color.fromARGB(255, 210, 232, 236),
     );
     Navigator.pop(context);

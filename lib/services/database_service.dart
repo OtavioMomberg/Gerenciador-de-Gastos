@@ -61,4 +61,10 @@ class DatabaseService {
   Future<void> deleteExpense({required int expenseID}) async {
     await database.deleteExpense(expenseID: expenseID);
   }
+
+  Future<void> deleteSelectedExpenses({required List<int> expenseID}) async {
+    for (var id in expenseID) {
+      await database.deleteExpense(expenseID: id);
+    }
+  }
 }

@@ -233,30 +233,6 @@ class DB {
     }
   }
 
-  Future<ExpenseRead> selectExpenseByID({required int expenseID}) async {
-    final db = await database;
-    final RawQuery query;
-
-    try {
-      query = await db.query(
-        DbColumnsInfo.expenseTableName,
-        where: "${DbColumnsInfo.idExpenseTable} = ?",
-        whereArgs: [expenseID],
-      );
-
-      if (query.isEmpty) {
-        throw Exception("Despesa não encontrada.");
-      }
-
-      final expense = query
-          .map((expense) => ExpenseRead.fromMap(map: expense))
-          .first;
-      return expense;
-    } catch (error) {
-      throw Exception(error.toString());
-    }
-  }
-
   Future<List<ExpenseRead>> selectExpensesByGroup({required int groupID}) async {
     final db = await database;
     final RawQuery query;

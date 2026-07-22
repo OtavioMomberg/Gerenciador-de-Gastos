@@ -30,6 +30,4 @@ class ExpenseRead {
       groupID: map[DbColumnsInfo.groupIdExpenseTable] as int
     );
   }
-
-  double? get priceAsDouble => double.tryParse(price);
 }

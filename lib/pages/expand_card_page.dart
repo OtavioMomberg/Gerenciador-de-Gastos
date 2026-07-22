@@ -10,7 +10,7 @@ import 'package:gerenciador_gastos_v2/widgets/text_button_colored.dart';
 class ExpandCardPage extends StatefulWidget {
   final int index;
 
-  const ExpandCardPage({required this.index, super.key});
+  const ExpandCardPage({required this.index,  super.key});
 
   @override
   State<ExpandCardPage> createState() => _ExpandCardPageState();

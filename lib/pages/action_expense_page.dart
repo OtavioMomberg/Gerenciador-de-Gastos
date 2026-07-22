@@ -152,10 +152,10 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
       );
 
       final check = widget.action == ActionsEnum.create;
+      expenseData.price = (((int.parse(expenseData.price) * 100) / expenseData.installments!) / 100).toStringAsFixed(2);
 
       if (check) {
         int firstDay = int.parse(expenseData.date.substring(0, 2));
-
         for (int i=0; i<installments; i++) {
           await _db.addExpense(expenseData: expenseData);
           expenseData.increaseMonth(day: firstDay);
@@ -163,7 +163,6 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
         }
       } else {
         if (expenseData.paymentMethod == "Crédito" && expenseData.installments != null) {
-          expenseData.price = (double.parse(expenseData.price) / expenseData.installments!).toStringAsFixed(2);
           expenseData.installments = int.tryParse(_controller.expenseInstallment!.text);
           await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
 
@@ -172,8 +171,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
           for (int i=0; i<installments-1; i++) {
             expenseData.increaseMonth(day: firstDay);
             expenseData.decreaseInstallment();
-            await _db.addExpense(expenseData: expenseData);
-            
+            await _db.addExpense(expenseData: expenseData);    
           }
         } else {
           await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);

@@ -46,7 +46,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
           children: <Widget>[
             const SizedBox(height: 10),
             Text(
-              _db.expenses[widget.index].name,
+              _db.expensesWithoutFuture[widget.index].name,
               style: TextStyle(
                 color: Color.fromARGB(255, 136, 136, 136),
                 fontSize: 20,
@@ -71,7 +71,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                       crossAxisAlignment: .start,
                       children: <Widget>[
                         Text(
-                          "Preço: R\$ ${_db.expenses[widget.index].price}",
+                          "Preço: R\$ ${_db.expensesWithoutFuture[widget.index].price}",
                           style: TextStyle(
                             color: Color.fromARGB(255, 136, 136, 136),
                             fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         const Divider(),
                         const SizedBox(height: 10),
                         Text(
-                          "Forma de pagamento: ${_db.expenses[widget.index].paymentMethod}",
+                          "Forma de pagamento: ${_db.expensesWithoutFuture[widget.index].paymentMethod}",
                           style: TextStyle(
                             color: Color.fromARGB(255, 136, 136, 136),
                             fontWeight: FontWeight.bold,
@@ -88,10 +88,10 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         ),
                         const Divider(),
                         const SizedBox(height: 10),
-                        if (_db.expenses[widget.index].paymentMethod ==
+                        if (_db.expensesWithoutFuture[widget.index].paymentMethod ==
                             "Crédito") ...[
                           Text(
-                            "Parcelas: ${_db.expenses[widget.index].installments}",
+                            "Parcelas: ${_db.expensesWithoutFuture[widget.index].installments}",
                             style: TextStyle(
                               color: const Color.fromARGB(255, 136, 136, 136),
                               fontWeight: FontWeight.bold,
@@ -101,7 +101,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                           const SizedBox(height: 10),
                         ],
                         Text(
-                          "Data de vencimento: ${_db.expenses[widget.index].date}",
+                          "Data de vencimento: ${_db.expensesWithoutFuture[widget.index].date}",
                           style: TextStyle(
                             color: Color.fromARGB(255, 136, 136, 136),
                             fontWeight: FontWeight.bold
@@ -128,7 +128,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         index: widget.index, 
                         page: ActionExpensePage(
                           action: ActionsEnum.update,
-                          expenseData: _db.expenses[widget.index],
+                          expenseData: _db.expensesWithoutFuture[widget.index],
                         ),
                         thenFunction: thenFunction
                       )
@@ -148,7 +148,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         );
                         if (response) {
                           await _db.deleteExpense(
-                            expenseID: _db.expenses[widget.index].id,
+                            expenseID: _db.expensesWithoutFuture[widget.index].id,
                           );
                           showSnackBar();
                         }
@@ -166,7 +166,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
 
   void thenFunction({bool? response}) async {
     if (response != null && response) {
-      await _db.selectExpensesByGroup(groupID: _db.expenses[widget.index].groupID);
+      await _db.selectExpensesByGroup(groupID: _db.expensesWithoutFuture[widget.index].groupID);
       if (!mounted) { return; }
       setState(() {});
     }

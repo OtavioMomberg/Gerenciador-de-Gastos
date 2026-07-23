@@ -58,7 +58,7 @@ class ExpenseWrite {
     }
 
     num = int.parse(date.substring(3, 5)) + 1;
-    if (num < 12) {
+    if (num <= 12) {
       maxDays = daysInMonth[num]!;
       if (day >= maxDays) {
         date = date.replaceRange(0, 2, maxDays.toString());

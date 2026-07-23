@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_group_page.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with ChangePage {
   final _db = DatabaseService.instance();
+  final groupService = GroupService.instance();
 
   @override
   void initState() {
@@ -135,6 +137,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
                               width: (size.width - 30) * 0.5, 
                               onTap: () async {
                                 await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
+                                groupService.populateCheckColor(len: _db.expensesWithoutFuture.length);
                                 navigation(page: GroupPage(groupID: snapshot.data![index].id), index: index);
                               }, 
                               onLongPress: () {

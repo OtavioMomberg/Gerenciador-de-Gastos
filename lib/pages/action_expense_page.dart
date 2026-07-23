@@ -152,7 +152,13 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
       );
 
       final check = widget.action == ActionsEnum.create;
-      expenseData.price = (((int.parse(expenseData.price) * 100) / expenseData.installments!) / 100).toStringAsFixed(2);
+      if (expenseData.price.contains(".") || expenseData.price.contains(",")) {
+        expenseData.price = expenseData.price.replaceAll(".", "").replaceAll(",", "");
+      } else {
+        expenseData.price = (int.parse(expenseData.price) * 100).toString();
+      }
+      
+      expenseData.price = ((int.parse(expenseData.price) / expenseData.installments!) / 100).toStringAsFixed(2);
 
       if (check) {
         int firstDay = int.parse(expenseData.date.substring(0, 2));

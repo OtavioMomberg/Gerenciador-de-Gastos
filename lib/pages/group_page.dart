@@ -88,52 +88,62 @@ class _GroupPageState extends State<GroupPage>
                   label: "Apagar Selecionados", 
                   height: 60,
                   function: () async {
-                    if (await deleteProcess(message: "Tem certeza que deseja apagar esse gasto?")) {
+                    if (await deleteProcess(message: "Tem certeza que deseja apagar esses gastos?")) {
                       await _db.deleteSelectedExpenses(expenseID: groupService.indexList);
                       showResponse(message: "Gastos removidos com sucesso!");
+                      groupService.isExpenseSelected = !groupService.isExpenseSelected;
+                      groupService.checkColor.clear();
+                      groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
+                      print(groupService.checkColor);
+                      print("GROUP => ${groupService.isExpenseSelected}");
                     }
                   }
                 )
               )
             ),
             const SizedBox(height: 10),
-            if (_db.expenses.isNotEmpty) ...[
+            
               Expanded(
-                child: ListView.builder(
-                  itemCount: _db.expenses.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: ExpenseCard(
-                        index: index,
-                        setStateCallback: () => setState(() {}),
-                        thenFunction: thenFunction
-                      )
+                child: FutureBuilder(
+                  future: _db.expenses,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return SizedBox(
+                        height: 100,
+                        width: double.infinity,
+                        child: Card(
+                          color: const Color.fromARGB(255, 210, 232, 236),
+                          child: Center(
+                            child: Text(
+                              "Nenhum gasto encontrado",
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 136, 136, 136),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: ExpenseCard(
+                            index: index,
+                            setStateCallback: () => setState(() {}),
+                            thenFunction: thenFunction
+                          )
+                        );
+                      }
                     );
                   }
                 )
-              ),
-            ] else ...[
-              SizedBox(
-                height: 100,
-                width: double.infinity,
-                child: Card(
-                  color: const Color.fromARGB(255, 210, 232, 236),
-                  child: Center(
-                    child: Text(
-                      "Nenhum gasto encontrado",
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+              )
+          ]
+        )
+      )
     );
   }
 
@@ -260,9 +270,9 @@ class _GroupPageState extends State<GroupPage>
   }
 
   void thenFunction({bool? response}) async {
-      await _db.selectExpensesByGroup(groupID: widget.groupID);
-      if (!mounted) { return; }
-      setState(() {});
+    await _db.selectExpensesByGroup(groupID: widget.groupID);
+    if (!mounted) { return; }
+    setState(() {});
   }
 
   @override

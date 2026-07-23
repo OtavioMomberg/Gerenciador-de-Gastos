@@ -15,10 +15,11 @@ class DatabaseService {
 
   late Future<List<GroupRead>> groups;
   late List<GroupRead> groupsWithoutFuture;
-  late List<ExpenseRead> expenses;
+  late Future<List<ExpenseRead>> expenses;
+  late List<ExpenseRead> expensesWithoutFuture;
 
   // GROUP ACTIONS
-  void selectGroups() async {
+  Future<void> selectGroups() async {
     groups = database.selectGroups();
     groupsWithoutFuture = await database.selectGroups();
   }
@@ -37,8 +38,8 @@ class DatabaseService {
 
   // EXPENSE ACTIONS
   Future<void> selectExpensesByGroup({required int groupID}) async {
-    final expensesFuture = database.selectExpensesByGroup(groupID: groupID);
-    expenses = await expensesFuture;
+    expenses = database.selectExpensesByGroup(groupID: groupID);
+    expensesWithoutFuture = await expenses;
   }
 
   Future<void> selectExpensesByDate({
@@ -46,8 +47,8 @@ class DatabaseService {
     required String month, 
     required String year
   }) async {
-    final expensesFuture = database.selectExpenseByDate(groupID: groupID, month: month, year: year);
-    expenses = await expensesFuture;
+    expenses = database.selectExpensesByGroup(groupID: groupID);
+    expensesWithoutFuture = await expenses;
   }
 
   Future<void> addExpense({required ExpenseWrite expenseData}) async {

@@ -25,58 +25,14 @@ class ExpenseCard extends StatelessWidget with ChangePage {
       color: groupService.checkColor[index]
         ? groupService.colors[1]
         : groupService.colors[0],
-        
-      elevation: 5,
       type: MaterialType.card,
-      //shadowColor: groupService.colors[groupService.indexColor].withValues(alpha: 0.7),
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
-        splashColor: const Color.fromARGB(255, 234, 242, 252),
-        highlightColor: const Color.fromARGB(255, 234, 242, 252),
         onTap: () {
-          if (groupService.isExpenseSelected) {
-            if (groupService.cardIndex == index) { return; }
-
-            final id = _db.expenses[index].id;
-
-            if (groupService.indexList.contains(id)) {
-              groupService.indexList.remove(id);
-              groupService.checkColor[index] = false;
-            } else {
-              groupService.indexList.add(id);
-              groupService.checkColor[index] = true;
-            }
-            setStateCallback();
-          } else {  
-            goNextPage(
-              context: context, 
-              index: index, 
-              page: ExpandCardPage(index: index),
-              thenFunction: thenFunction,
-            );
-          }
+          groupService.isExpenseSelected ? selectCard() : changePage(context: context);
         },
-        onLongPress: () {
-          /*if (groupService.indexList.isNotEmpty) {
-            if (groupService.indexList.first != index) {
-              return;
-            }
-          }*/
-          groupService.cardIndex = index;
-          final id = _db.expenses[index].id;
-          groupService.isExpenseSelected = !groupService.isExpenseSelected;
-
-          if (groupService.isExpenseSelected) { 
-            groupService.indexList.add(id);
-            groupService.checkColor[index] = true;
-          } else {
-            groupService.indexList.clear();
-            groupService.checkColor.clear();
-            groupService.checkColor = List.generate(_db.expenses.length, (index) => false);
-          }
-          setStateCallback();
-        },
+        onLongPress: unlockSelectOption,
         child: SizedBox(
           height: 100,
           child: Column(
@@ -89,14 +45,14 @@ class ExpenseCard extends StatelessWidget with ChangePage {
                   mainAxisAlignment: .spaceBetween,
                   children: <Widget>[
                     Text(
-                      _db.expenses[index].name,
+                     _db.expensesWithoutFuture[index].name,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 136, 136, 136),
                         fontWeight: FontWeight.bold
                       )
                     ),
                     Text(
-                      _db.expenses[index].date,
+                      _db.expensesWithoutFuture[index].date,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 136, 136, 136),
                         fontWeight: FontWeight.bold
@@ -108,7 +64,7 @@ class ExpenseCard extends StatelessWidget with ChangePage {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  "R\$ ${_db.expenses[index].price}",
+                  "R\$ ${_db.expensesWithoutFuture[index].price}",
                   style: const TextStyle(
                     color: Color.fromARGB(255, 136, 136, 136),
                     fontWeight: FontWeight.bold
@@ -120,5 +76,57 @@ class ExpenseCard extends StatelessWidget with ChangePage {
         )
       )
     );
+  }
+  
+  void selectCard() {
+    if (groupService.cardIndex == index && groupService.indexList.length > 1) { return; }
+      if (groupService.cardIndex == index && groupService.indexList.length == 1) {
+        groupService.isExpenseSelected = !groupService.isExpenseSelected;
+        groupService.indexList.clear();
+        groupService.checkColor.clear();
+        groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
+        setStateCallback();
+        return;
+      }
+      final id = _db.expensesWithoutFuture[index].id;
+
+      if (groupService.indexList.contains(id)) {
+        groupService.indexList.remove(id);
+        groupService.checkColor[index] = false;
+      } else {
+        groupService.indexList.add(id);
+        groupService.checkColor[index] = true;
+      }
+      setStateCallback();
+  }
+  
+  void changePage({required BuildContext context}) {
+    goNextPage(
+      context: context, 
+      index: index, 
+      page: ExpandCardPage(index: index),
+        thenFunction: thenFunction,
+    );
+  }
+  
+  void unlockSelectOption() {
+    final id = _db.expensesWithoutFuture[index].id;
+
+    if (groupService.indexList.isNotEmpty) {
+      if (!groupService.indexList.contains(id)) { return; } 
+    }
+
+    groupService.cardIndex = index;
+    groupService.isExpenseSelected = !groupService.isExpenseSelected;
+
+    if (groupService.isExpenseSelected) { 
+      groupService.indexList.add(id);
+      groupService.checkColor[index] = true;
+    } else {
+      groupService.indexList.clear();
+      groupService.checkColor.clear();
+      groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
+    }
+    setStateCallback();
   }
 }

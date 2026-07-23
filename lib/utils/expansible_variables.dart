@@ -15,6 +15,8 @@ class ExpansibleVariables {
 
   final List<String> paymentMethods = List.unmodifiable(["Débito", "Crédito", "PIX"]);
 
+  final List<String> paymentMethodsCalculation = List.unmodifiable(["Débito", "Crédito", "PIX", "Todos"]);
+
   final List<int> days = List.unmodifiable(List.generate(31, (index) => index + 1));
 
   final List<int> months = List.unmodifiable(List.generate(12, (index) => index + 1));

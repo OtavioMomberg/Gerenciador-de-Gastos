@@ -7,10 +7,12 @@ import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 class ExpansiblePaymentBody extends StatelessWidget {
   final ExpansibleController controller;
   final VoidCallback setStateCallback;
+  final List<String> paymentList;
 
   ExpansiblePaymentBody({
     required this.controller,
     required this.setStateCallback,
+    required this.paymentList,
     super.key
   });
 
@@ -28,23 +30,23 @@ class ExpansiblePaymentBody extends StatelessWidget {
       height: 200,
       child: ListView(
         children: <Widget>[
-          ...List.generate(_expansibleVariables.paymentMethods.length, (index) {
+          ...List.generate(paymentList.length, (index) {
             return Padding(
               padding: const EdgeInsets.all(5),
               child: Material(
                 child: ListTile(
                   onTap: () {
-                    _expansibleVariables.groupPayment = _expansibleVariables.paymentMethods[index];
-                    _controller.expensePaymentMethod!.text = _expansibleVariables.paymentMethods[index];
+                    _expansibleVariables.groupPayment = paymentList[index];
+                    _controller.expensePaymentMethod!.text = paymentList[index];
                     controller.collapse();
                     setStateCallback();
-                    if (_expansibleVariables.paymentMethods[index] == "Crédito") {
+                    if (paymentList[index] == "Crédito" && paymentList.length < 4) {
                       setInstallments(context: context);
                     }
                   },
                   title: Center(
                     child: Text(
-                      _expansibleVariables.paymentMethods[index],
+                      paymentList[index],
                       style: TextStyle(
                         color: Color.fromARGB(255, 136, 136, 136),
                         fontWeight: FontWeight.bold

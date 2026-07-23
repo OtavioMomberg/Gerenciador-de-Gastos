@@ -32,10 +32,10 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
           "Detalhes do Gasto",
           style: TextStyle(
             color: Color.fromARGB(255, 136, 136, 136),
-            fontWeight: FontWeight.bold,
-          ),
+            fontWeight: FontWeight.bold
+          )
         ),
-        foregroundColor: Color.fromARGB(255, 136, 136, 136),
+        foregroundColor: Color.fromARGB(255, 136, 136, 136)
       ),
       backgroundColor: const Color.fromARGB(255, 234, 242, 252),
       body: Container(
@@ -50,8 +50,8 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
               style: TextStyle(
                 color: Color.fromARGB(255, 136, 136, 136),
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                fontWeight: FontWeight.bold
+              )
             ),
             Flexible(
               child: Material(
@@ -132,7 +132,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         ),
                         thenFunction: thenFunction
                       )
-                    ),
+                    )
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -153,7 +153,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                           showSnackBar();
                         }
                       }
-                    ),
+                    )
                   )
                 ]
               )

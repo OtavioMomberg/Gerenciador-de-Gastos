@@ -94,8 +94,6 @@ class _GroupPageState extends State<GroupPage>
                       groupService.isExpenseSelected = !groupService.isExpenseSelected;
                       groupService.checkColor.clear();
                       groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
-                      print(groupService.checkColor);
-                      print("GROUP => ${groupService.isExpenseSelected}");
                     }
                   }
                 )
@@ -109,7 +107,6 @@ class _GroupPageState extends State<GroupPage>
                   builder: (context, snapshot) {
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return SizedBox(
-                        height: 100,
                         width: double.infinity,
                         child: Card(
                           color: const Color.fromARGB(255, 210, 232, 236),
@@ -118,11 +115,11 @@ class _GroupPageState extends State<GroupPage>
                               "Nenhum gasto encontrado",
                               style: const TextStyle(
                                 color: Color.fromARGB(255, 136, 136, 136),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
+                                fontWeight: FontWeight.bold
+                              )
+                            )
+                          )
+                        )
                       );
                     }
                     return ListView.builder(
@@ -150,7 +147,6 @@ class _GroupPageState extends State<GroupPage>
   Future<void> filter() async {
     await showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (_) => AlertDialog(
         backgroundColor: const Color.fromARGB(255, 234, 242, 252),
         title: Center(
@@ -158,9 +154,9 @@ class _GroupPageState extends State<GroupPage>
             "Filtro",
             style: TextStyle(
               color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+              fontWeight: FontWeight.bold
+            )
+          )
         ),
         content: Column(
           mainAxisSize: .min,
@@ -177,14 +173,18 @@ class _GroupPageState extends State<GroupPage>
               inputType: TextInputType.number,
             ),
             const SizedBox(height: 10),
-            Button(label: "Filtrar", height: 60, function: checkValues),
-          ],
-        ),
-      ),
+            Button(label: "Filtrar", height: 60, function: checkValues)
+          ]
+        )
+      )
     );
   }
 
   void checkValues() {
+    if (month.text.isEmpty && year.text.isEmpty) {
+      updateFilter(getAllExpenses: true);
+      return;
+    }
     if (month.text.isEmpty || year.text.isEmpty) {
       showError(
         context: context,
@@ -215,9 +215,11 @@ class _GroupPageState extends State<GroupPage>
     updateFilter();
   }
 
-  void updateFilter() {
-    if (int.parse(month.text) == 0) {
-      _db.selectExpensesByGroup(groupID: widget.groupID);
+  void updateFilter({bool? getAllExpenses}) {
+    if (getAllExpenses != null) {
+      if (getAllExpenses) {
+        _db.selectExpensesByGroup(groupID: widget.groupID);
+      } 
     } else {
       _db.selectExpensesByDate(
         groupID: widget.groupID,

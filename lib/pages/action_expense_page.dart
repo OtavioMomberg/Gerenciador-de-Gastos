@@ -94,6 +94,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                 ),
                 body: ExpansiblePaymentBody(
                   controller: _controller.expansiblePaymentController!,
+                  paymentList: _expansibleVariables.paymentMethods,
                   setStateCallback: () => setState(() {})
                 )
               ),

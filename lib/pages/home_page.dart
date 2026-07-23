@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/pages/calculation_page.dart';
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
@@ -67,9 +68,9 @@ class _HomePageState extends State<HomePage> with ChangePage {
                 hintStyle: const WidgetStatePropertyAll(
                   TextStyle(
                     color: Color.fromARGB(255, 136, 136, 136),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                    fontWeight: FontWeight.bold
+                  )
+                )
               ),
               const SizedBox(height: 10),
               Row(
@@ -80,20 +81,25 @@ class _HomePageState extends State<HomePage> with ChangePage {
                       label: "Criar Grupo",
                       height: 100,
                       navigation: navigation,
-                      page: ActionGroupPage(action: ActionsEnum.create),
-                    ),
+                      page: ActionGroupPage(action: ActionsEnum.create)
+                    )
                   ),
                   Expanded(
                     child: Button(
                       label: "Adicionar Gasto",
                       height: 100,
                       navigation: navigation,
-                      page: ActionExpensePage(action: ActionsEnum.create),
-                    ),
-                  ),
-                ],
+                      page: ActionExpensePage(action: ActionsEnum.create)
+                    )
+                  )
+                ]
               ),
-              Button(label: "Calcular Gastos", height: 60),
+              Button(
+                label: "Calcular Gastos", 
+                height: 60,
+                navigation: navigation,
+                page: CalculationPage()
+              ),
               const SizedBox(height: 30),
               Column(
                 children: <Widget>[

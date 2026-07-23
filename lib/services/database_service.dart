@@ -51,6 +51,11 @@ class DatabaseService {
     expensesWithoutFuture = await expenses;
   }
 
+  Future<void> selectExpensesByGroupAndPaymentMethod({required int groupID, required String paymentMethod}) async {
+    expenses = database.selectExpensesByGroupAndPaymentMethod(groupID: groupID, paymentMethod: paymentMethod);
+    expensesWithoutFuture = await expenses;
+  }
+
   Future<void> addExpense({required ExpenseWrite expenseData}) async {
     await database.addExpense(expenseData: expenseData);
   }

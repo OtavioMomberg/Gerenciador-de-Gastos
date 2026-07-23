@@ -255,6 +255,32 @@ class DB {
     }
   }
 
+  Future<List<ExpenseRead>> selectExpensesByGroupAndPaymentMethod({required int groupID, required String paymentMethod}) async {
+    final db = await database;
+    final RawQuery query;
+
+    final String params = paymentMethod == "Todos" 
+      ? "${DbColumnsInfo.groupIdExpenseTable} = ? AND ${DbColumnsInfo.paymentMethodExpenseTable} = ?"
+      : "${DbColumnsInfo.groupIdExpenseTable} = ?";
+
+    try {
+      query = await db.query(
+        DbColumnsInfo.expenseTableName,
+        where: params,
+        whereArgs: [groupID, paymentMethod],
+      );
+
+      if (query.isEmpty) {
+        return [];
+      }
+
+      final expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
+      return expenses;
+    } catch (error) {
+      throw Exception(error.toString());
+    }
+  }
+
   Future<void> updateExpense({required ExpenseWrite expenseData, required int expenseID}) async {
     final db = await database;
 

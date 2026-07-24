@@ -93,6 +93,7 @@ class _GroupPageState extends State<GroupPage>
                       showResponse(message: "Gastos removidos com sucesso!");
                       groupService.isExpenseSelected = !groupService.isExpenseSelected;
                       groupService.checkColor.clear();
+                      groupService.indexList.clear();
                       groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
                     }
                   }

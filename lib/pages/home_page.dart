@@ -175,6 +175,8 @@ class _HomePageState extends State<HomePage> with ChangePage {
   }
 
   void navigation({required Widget page, int index = 0}) {
+    if (_db.groupsWithoutFuture.isEmpty && page.runtimeType != ActionGroupPage) { return; }
+
     goNextPage(
       context: context, 
       index: index, 

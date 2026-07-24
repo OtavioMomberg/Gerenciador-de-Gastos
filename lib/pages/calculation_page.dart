@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/pages/expenses_calculated_page.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
+import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/expansible_widget.dart';
@@ -17,7 +19,7 @@ class CalculationPage extends StatefulWidget {
   State<CalculationPage> createState() => _CalculationPageState();
 }
 
-class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
+class _CalculationPageState extends State<CalculationPage> with ErrorDialog, ChangePage {
   final _db = DatabaseService.instance();
   final _controller = ControllerUtils.instance();
   final _expansibleVariables = ExpansibleVariables.instance();
@@ -27,10 +29,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
   void initState() {
     super.initState();
 
-    _expansibleVariables.groupName = ExpansibleVariables.name;
-    _expansibleVariables.groupPayment = ExpansibleVariables.payment;
-    _controller.expansibleGroupIDController = ExpansibleController();
-    _controller.expansiblePaymentController = ExpansibleController();
+    init();
   }
 
   @override
@@ -38,8 +37,15 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        foregroundColor: const Color.fromARGB(255, 136, 136, 136),
         surfaceTintColor: Colors.transparent,
-        toolbarHeight: 0
+        title: const Text(
+          "Calcule seus Gastos",
+          style: TextStyle(
+            color: Color.fromARGB(255, 136, 136, 136),
+            fontWeight: FontWeight.bold
+          )
+        )
       ),
       backgroundColor: const Color.fromARGB(255, 234, 242, 252),
       body: Container(
@@ -51,14 +57,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
           child: Column(
             spacing: 10,
             children: <Widget>[
-              const Text(
-                "Calcule seus Gastos",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-                )
-              ), 
+              const SizedBox(height: 40),
               ExpansibleWidget(
                 header: ExpansibleIdHeader(
                   controller: _controller.expansibleGroupIDController!, 
@@ -82,12 +81,22 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
                 ), 
                 controller: _controller.expansiblePaymentController!
               ),
+              const SizedBox(height: 10),
               Button(
                 label: "Calcular", 
                 height: 60,
                 function: checkData,
               ),
               if (result.isNotEmpty)...[
+                const SizedBox(height: 20),
+                const Text(
+                  "Resultado",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 136, 136, 136),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
                 Container(
                   height: 100,
                   width: double.infinity,
@@ -97,21 +106,83 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
                   ),
                   child: Center(
                     child: Text(
-                      result,
+                      !(result.startsWith("0") && result == "0") 
+                        ? "R\$ $result" 
+                        : "Sem gastos no ${_controller.expensePaymentMethod!.text}",
                       style: TextStyle(
                         color: const Color.fromARGB(255, 136, 136, 136),
                         fontSize: 20,
                         fontWeight: FontWeight.bold
                       )
                     )
-                  ),
-                )
+                  )
+                ),
+                Row(
+                  spacing: 10,
+                  children: <Widget>[
+                    Expanded(
+                      child: Button(
+                        label: "Ver gastos calculados",
+                        height: 60,
+                        function: () {
+                          String groupName = "";
+                          for (var expense in _db.expensesWithoutFuture) {
+                            if (int.parse(_controller.expenseGroupID!.text) == expense.groupID) {
+                              groupName = expense.name;
+                              break;
+                            }
+                          }
+                          goNextPage(
+                            context: context, 
+                            index: 0, 
+                            page: ExpensesCalculatedPage(
+                              groupName: groupName, 
+                              paymentMethod: _controller.expensePaymentMethod!.text, 
+                              expenses: _db.expensesWithoutFuture
+                            )
+                          );
+                        }
+                      )
+                    ),
+                    Expanded(
+                      child: Button(
+                        label: "Limpar", 
+                        height: 60,
+                        function: () {
+                          result = "";
+                          _controller.expenseGroupID!.clear();
+                          _controller.expensePaymentMethod!.clear();
+                          init();
+                          setState(() {});
+                        }
+                      )
+                    )
+                  ]
+                )  
               ]
             ]
           )
         )
       )
     );
+  }
+
+  void init() {
+    _expansibleVariables.groupName = ExpansibleVariables.name;
+    _expansibleVariables.groupPayment = ExpansibleVariables.payment;
+
+    if (_controller.expenseGroupID != null) {
+      _controller.expenseGroupID = TextEditingController();
+    }
+    if (_controller.expensePaymentMethod != null) {
+      _controller.expensePaymentMethod = TextEditingController();
+    }
+    if (_controller.expansibleGroupIDController != null) {
+      _controller.expansibleGroupIDController = ExpansibleController();
+    }
+    if (_controller.expansiblePaymentController != null) {
+      _controller.expansiblePaymentController = ExpansibleController();
+    }
   }
 
   void checkData() async {
@@ -132,10 +203,10 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog {
   }
 
   void doCalculations() {
-    int value = 0;
+    double value = 0;
     for (var expense in _db.expensesWithoutFuture) {
-      String price = expense.price.replaceAll(".", "").replaceAll(",", "");
-      value += int.parse(price);
+      String price = expense.price.replaceAll(",", ".");
+      value += (double.parse(price) * 100);
     }
     result = (value / 100).toString();
     setState(() {});

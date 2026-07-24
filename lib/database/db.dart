@@ -258,16 +258,17 @@ class DB {
   Future<List<ExpenseRead>> selectExpensesByGroupAndPaymentMethod({required int groupID, required String paymentMethod}) async {
     final db = await database;
     final RawQuery query;
+    final bool checkQuery = paymentMethod == "Todos";
 
-    final String params = paymentMethod == "Todos" 
-      ? "${DbColumnsInfo.groupIdExpenseTable} = ? AND ${DbColumnsInfo.paymentMethodExpenseTable} = ?"
-      : "${DbColumnsInfo.groupIdExpenseTable} = ?";
+    final String params = checkQuery
+      ? "${DbColumnsInfo.groupIdExpenseTable} = ?"
+      : "${DbColumnsInfo.groupIdExpenseTable} = ? AND ${DbColumnsInfo.paymentMethodExpenseTable} = ?";
 
     try {
       query = await db.query(
         DbColumnsInfo.expenseTableName,
         where: params,
-        whereArgs: [groupID, paymentMethod],
+        whereArgs: checkQuery ? [groupID] : [groupID, paymentMethod],
       );
 
       if (query.isEmpty) {

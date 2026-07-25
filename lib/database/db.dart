@@ -264,7 +264,6 @@ class DB {
     final db = await database;
     final RawQuery query;
     final bool checkQuery = paymentMethod == "Todos";
-
     List<Object> args = [];
 
     String params = checkQuery
@@ -274,15 +273,17 @@ class DB {
     args = checkQuery ? [groupID] : [groupID, paymentMethod];
 
     if (day != null && month != null) {
-      params = "$params AND ${DbColumnsInfo.dateExpenseTable} LIKE ?";
+      params += " AND ${DbColumnsInfo.dateExpenseTable} LIKE ?";
+      params += " OR ${DbColumnsInfo.dateExpenseTable} LIKE ?";
 
-      int monthNumeric = int.parse(month);
+      int monthAsInt = int.parse(month);
+      final int year = DateTime.now().year;
 
-      //final previousDate = "%${monthNumeric-1}/${DateTime.now().year}";
-      final date = "%$monthNumeric/${DateTime.now().year}";
+      final previousDate = "%${monthAsInt-1}/$year";
+      final currentDate = "%$monthAsInt/$year";
 
-      //args.addAll([previousDate, date]);
-      args.add(date);
+      args.addAll([previousDate, currentDate]);
+      //args.add(currentDate);
     }
     print(params);
     print(args);

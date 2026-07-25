@@ -62,7 +62,7 @@ class _GroupPageState extends State<GroupPage>
                   "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.";
               if (await deleteProcess(message: message)) {
                 await _db.deleteGroup(groupID: widget.groupID);
-                _db.selectGroups();
+                await _db.selectGroups();
                 showResponse(message: "Grupo removido com sucesso!");
               }
             },
@@ -98,12 +98,7 @@ class _GroupPageState extends State<GroupPage>
                       );
                       showResponse(message: "Gastos removidos com sucesso!");
                       groupService.isExpenseSelected = !groupService.isExpenseSelected;
-                      //groupService.checkColor.clear();
                       groupService.indexList.clear();
-                      //groupService.checkColor = List.generate(
-                        //_db.expensesWithoutFuture.length,
-                        //(index) => false,
-                      //);
                     }
                   },
                 ),
@@ -131,7 +126,6 @@ class _GroupPageState extends State<GroupPage>
                       ),
                     );
                   }
-                  print("SIZE: ${snapshot.data!.length}");
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -227,13 +221,13 @@ class _GroupPageState extends State<GroupPage>
     updateFilter();
   }
 
-  void updateFilter({bool? getAllExpenses}) {
+  void updateFilter({bool? getAllExpenses}) async {
     if (getAllExpenses != null) {
       if (getAllExpenses) {
-        _db.selectExpensesByGroup(groupID: widget.groupID);
+        await _db.selectExpensesByGroup(groupID: widget.groupID);
       }
     } else {
-      _db.selectExpensesByDate(
+      await _db.selectExpensesByDate(
         groupID: widget.groupID,
         month: month.text,
         year: year.text,
@@ -243,15 +237,14 @@ class _GroupPageState extends State<GroupPage>
     month.clear();
     year.clear();
 
+    if (!mounted) { return; }
     Navigator.pop(context);
   }
 
   void closeDialog() {
     month.clear();
     year.clear();
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) { return;}
     Navigator.pop(context);
   }
 
@@ -265,9 +258,7 @@ class _GroupPageState extends State<GroupPage>
   }
 
   void showResponse({required String message}) {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) { return; }
 
     showColoredSnackBar(
       context: context,
@@ -288,9 +279,7 @@ class _GroupPageState extends State<GroupPage>
 
   void thenFunction({bool? response}) async {
     await _db.selectExpensesByGroup(groupID: widget.groupID);
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) { return; }
     setState(() {});
   }
 

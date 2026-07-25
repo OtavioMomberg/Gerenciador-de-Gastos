@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
   }
 
   Future<void> init() async {
-    _db.selectGroups();
+    await _db.selectGroups();
   }
 
   void navigation({required Widget page, int index = 0}) {
@@ -180,8 +180,8 @@ class _HomePageState extends State<HomePage> with ChangePage {
       context: context, 
       index: index, 
       page: page,
-      thenFunction: ({response}) {
-        _db.selectGroups();
+      thenFunction: ({response}) async {
+        await _db.selectGroups();
         setState(() {});
       }
     );

@@ -10,7 +10,7 @@ import 'package:gerenciador_gastos_v2/widgets/text_button_colored.dart';
 class ExpandCardPage extends StatefulWidget {
   final int index;
 
-  const ExpandCardPage({required this.index,  super.key});
+  const ExpandCardPage({required this.index, super.key});
 
   @override
   State<ExpandCardPage> createState() => _ExpandCardPageState();
@@ -88,8 +88,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                         ),
                         const Divider(),
                         const SizedBox(height: 10),
-                        if (_db.expensesWithoutFuture[widget.index].paymentMethod ==
-                            "Crédito") ...[
+                        if (_db.expensesWithoutFuture[widget.index].paymentMethod == "Crédito") ...[
                           Text(
                             "Parcelas: ${_db.expensesWithoutFuture[widget.index].installments}",
                             style: TextStyle(

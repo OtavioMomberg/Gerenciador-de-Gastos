@@ -47,12 +47,22 @@ class DatabaseService {
     required String month, 
     required String year
   }) async {
-    expenses = database.selectExpensesByGroup(groupID: groupID);
+    expenses = database.selectExpenseByDate(groupID: groupID, month: month, year: year);
     expensesWithoutFuture = await expenses;
   }
 
-  Future<void> selectExpensesByGroupAndPaymentMethod({required int groupID, required String paymentMethod}) async {
-    expenses = database.selectExpensesByGroupAndPaymentMethod(groupID: groupID, paymentMethod: paymentMethod);
+  Future<void> selectExpensesByGroupAndPaymentMethod({
+    required int groupID, 
+    required String paymentMethod,
+    String? day,
+    String? month
+  }) async {
+    expenses = database.selectExpensesByGroupAndPaymentMethod(
+      groupID: groupID, 
+      paymentMethod: paymentMethod,
+      day: day,
+      month: month
+    );
     expensesWithoutFuture = await expenses;
   }
 

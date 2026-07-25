@@ -143,7 +143,6 @@ class _HomePageState extends State<HomePage> with ChangePage {
                               width: (size.width - 30) * 0.5, 
                               onTap: () async {
                                 await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
-                                groupService.populateCheckColor(len: _db.expensesWithoutFuture.length);
                                 navigation(page: GroupPage(groupID: snapshot.data![index].id), index: index);
                               }, 
                               onLongPress: () {

@@ -255,20 +255,43 @@ class DB {
     }
   }
 
-  Future<List<ExpenseRead>> selectExpensesByGroupAndPaymentMethod({required int groupID, required String paymentMethod}) async {
+  Future<List<ExpenseRead>> selectExpensesByGroupAndPaymentMethod({
+    required int groupID, 
+    required String paymentMethod,
+    String? day,
+    String? month
+  }) async {
     final db = await database;
     final RawQuery query;
     final bool checkQuery = paymentMethod == "Todos";
 
-    final String params = checkQuery
+    List<Object> args = [];
+
+    String params = checkQuery
       ? "${DbColumnsInfo.groupIdExpenseTable} = ?"
       : "${DbColumnsInfo.groupIdExpenseTable} = ? AND ${DbColumnsInfo.paymentMethodExpenseTable} = ?";
+
+    args = checkQuery ? [groupID] : [groupID, paymentMethod];
+
+    if (day != null && month != null) {
+      params = "$params AND ${DbColumnsInfo.dateExpenseTable} LIKE ?";
+
+      int monthNumeric = int.parse(month);
+
+      //final previousDate = "%${monthNumeric-1}/${DateTime.now().year}";
+      final date = "%$monthNumeric/${DateTime.now().year}";
+
+      //args.addAll([previousDate, date]);
+      args.add(date);
+    }
+    print(params);
+    print(args);
 
     try {
       query = await db.query(
         DbColumnsInfo.expenseTableName,
         where: params,
-        whereArgs: checkQuery ? [groupID] : [groupID, paymentMethod],
+        whereArgs: args,
       );
 
       if (query.isEmpty) {

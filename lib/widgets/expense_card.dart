@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/models/expense_read.dart';
 import 'package:gerenciador_gastos_v2/pages/expand_card_page.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 
@@ -8,21 +8,24 @@ class ExpenseCard extends StatelessWidget with ChangePage {
   final int index;
   final void Function({bool? response})? thenFunction;
   final VoidCallback setStateCallback;
+  final ExpenseRead expense;
+  final int length;
 
   ExpenseCard({
-    required this.index, 
+    required this.index,
     required this.setStateCallback,
+    required this.expense,
+    required this.length,
     this.thenFunction,
-    super.key
+    super.key,
   });
 
-  final _db = DatabaseService.instance();
   final groupService = GroupService.instance();
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: groupService.checkColor[index]
+      color: groupService.indexList.contains(index)
         ? groupService.colors[1]
         : groupService.colors[0],
       type: MaterialType.card,
@@ -30,7 +33,9 @@ class ExpenseCard extends StatelessWidget with ChangePage {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: () {
-          groupService.isExpenseSelected ? selectCard() : changePage(context: context);
+          groupService.isExpenseSelected
+            ? selectCard()
+            : changePage(context: context);
         },
         onLongPress: unlockSelectOption,
         child: SizedBox(
@@ -45,14 +50,14 @@ class ExpenseCard extends StatelessWidget with ChangePage {
                   mainAxisAlignment: .spaceBetween,
                   children: <Widget>[
                     Text(
-                     _db.expensesWithoutFuture[index].name,
+                      expense.name,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 136, 136, 136),
                         fontWeight: FontWeight.bold
                       )
                     ),
                     Text(
-                      _db.expensesWithoutFuture[index].date,
+                      expense.date,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 136, 136, 136),
                         fontWeight: FontWeight.bold
@@ -64,7 +69,7 @@ class ExpenseCard extends StatelessWidget with ChangePage {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  "R\$ ${_db.expensesWithoutFuture[index].price}",
+                  "R\$ ${expense.price}",
                   style: const TextStyle(
                     color: Color.fromARGB(255, 136, 136, 136),
                     fontWeight: FontWeight.bold
@@ -77,55 +82,49 @@ class ExpenseCard extends StatelessWidget with ChangePage {
       )
     );
   }
-  
-  void selectCard() {
-    if (groupService.cardIndex == index && groupService.indexList.length > 1) { return; }
-      if (groupService.cardIndex == index && groupService.indexList.length == 1) {
-        groupService.isExpenseSelected = !groupService.isExpenseSelected;
-        groupService.indexList.clear();
-        groupService.checkColor.clear();
-        groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
-        setStateCallback();
-        return;
-      }
-      final id = _db.expensesWithoutFuture[index].id;
 
-      if (groupService.indexList.contains(id)) {
-        groupService.indexList.remove(id);
-        groupService.checkColor[index] = false;
-      } else {
-        groupService.indexList.add(id);
-        groupService.checkColor[index] = true;
-      }
+  void selectCard() {
+    if (groupService.cardIndex == index && groupService.indexList.length > 1) {
+      return;
+    }
+    if (groupService.cardIndex == index && groupService.indexList.length == 1) {
+      groupService.isExpenseSelected = !groupService.isExpenseSelected;
+      groupService.indexList.clear();
       setStateCallback();
+      return;
+    }
+
+    if (groupService.indexList.contains(index)) {
+      groupService.indexList.remove(index);
+    } else {
+      groupService.indexList.add(index);
+    }
+    setStateCallback();
   }
-  
+
   void changePage({required BuildContext context}) {
     goNextPage(
-      context: context, 
-      index: index, 
+      context: context,
+      index: index,
       page: ExpandCardPage(index: index),
-        thenFunction: thenFunction,
+      thenFunction: thenFunction,
     );
   }
-  
-  void unlockSelectOption() {
-    final id = _db.expensesWithoutFuture[index].id;
 
+  void unlockSelectOption() {
     if (groupService.indexList.isNotEmpty) {
-      if (!groupService.indexList.contains(id)) { return; } 
+      if (!groupService.indexList.contains(index)) {
+        return;
+      }
     }
 
     groupService.cardIndex = index;
     groupService.isExpenseSelected = !groupService.isExpenseSelected;
 
-    if (groupService.isExpenseSelected) { 
-      groupService.indexList.add(id);
-      groupService.checkColor[index] = true;
+    if (groupService.isExpenseSelected) {
+      groupService.indexList.add(index);
     } else {
       groupService.indexList.clear();
-      groupService.checkColor.clear();
-      groupService.checkColor = List.generate(_db.expensesWithoutFuture.length, (index) => false);
     }
     setStateCallback();
   }

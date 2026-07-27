@@ -60,7 +60,7 @@ class DatabaseService {
     expenses = database.selectExpensesByGroupAndPaymentMethod(
       groupID: groupID, 
       paymentMethod: paymentMethod,
-      day: day,
+      day: day?.length == 1 ? "0$day" : day,
       month: month
     );
     expensesWithoutFuture = await expenses;

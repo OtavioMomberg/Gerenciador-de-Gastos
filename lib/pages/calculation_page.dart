@@ -230,8 +230,8 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
       return;
     }
 
-    String? dayFormated;
     String? monthFormated;
+    String? dayFormated;
 
     if (day.text.isNotEmpty && month.text.isNotEmpty) {
       dayFormated = day.text;

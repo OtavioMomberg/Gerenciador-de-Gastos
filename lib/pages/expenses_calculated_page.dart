@@ -74,7 +74,7 @@ class ExpensesCalculatedPage extends StatelessWidget {
                           )
                         ),
                         title: Text(
-                          "${expenses[index].name}      R\$ ${expenses[index].price}",
+                          "${expenses[index].name}      R\$ ${expenses[index].price}\n\nData de Validade: ${expenses[index].date}",
                           style: TextStyle(
                             color: const Color.fromARGB(255, 136, 136, 136),
                             fontWeight: FontWeight.bold

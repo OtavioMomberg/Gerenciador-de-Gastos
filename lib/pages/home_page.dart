@@ -10,6 +10,7 @@ import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
 import 'package:gerenciador_gastos_v2/widgets/group_card.dart';
+import 'package:gerenciador_gastos_v2/widgets/search_bar/search_bar_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,29 +50,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
             spacing: 15,
             children: <Widget>[
               const SizedBox(height: 10),
-              SearchBar(
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                backgroundColor: const WidgetStatePropertyAll(
-                  Color.fromARGB(255, 210, 232, 236),
-                ),
-                leading: const Icon(
-                  Icons.search,
-                  color: Color.fromARGB(255, 136, 136, 136),
-                  fontWeight: FontWeight.bold,
-                ),
-                elevation: const WidgetStatePropertyAll(5),
-                hintText: "Pesquisar",
-                hintStyle: const WidgetStatePropertyAll(
-                  TextStyle(
-                    color: Color.fromARGB(255, 136, 136, 136),
-                    fontWeight: FontWeight.bold
-                  )
-                )
-              ),
+              SearchBarWidget(navigation: navigation),
               const SizedBox(height: 10),
               Row(
                 spacing: 10,
@@ -81,24 +60,24 @@ class _HomePageState extends State<HomePage> with ChangePage {
                       label: "Criar Grupo",
                       height: 100,
                       navigation: navigation,
-                      page: ActionGroupPage(action: ActionsEnum.create)
-                    )
+                      page: ActionGroupPage(action: ActionsEnum.create),
+                    ),
                   ),
                   Expanded(
                     child: Button(
                       label: "Adicionar Gasto",
                       height: 100,
                       navigation: navigation,
-                      page: ActionExpensePage(action: ActionsEnum.create)
-                    )
-                  )
-                ]
+                      page: ActionExpensePage(action: ActionsEnum.create),
+                    ),
+                  ),
+                ],
               ),
               Button(
-                label: "Calcular Gastos", 
+                label: "Calcular Gastos",
                 height: 60,
                 navigation: navigation,
-                page: CalculationPage()
+                page: CalculationPage(),
               ),
               const SizedBox(height: 30),
               Column(
@@ -108,12 +87,15 @@ class _HomePageState extends State<HomePage> with ChangePage {
                     style: TextStyle(
                       color: Color.fromARGB(255, 136, 136, 136),
                       fontSize: 30,
-                      fontWeight: FontWeight.bold
-                    )
-                  ),    
-                  const SizedBox(height: 10),    
-                  SizedBox(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
                     height: size.height * 0.35,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10)
+                    ),
                     child: FutureBuilder(
                       future: _db.groups,
                       builder: (context, snapshot) {
@@ -137,23 +119,33 @@ class _HomePageState extends State<HomePage> with ChangePage {
                           itemCount: snapshot.data!.length,
                           separatorBuilder: (_, _) => const SizedBox(width: 10),
                           itemBuilder: (context, index) {
-                            return GroupCard(
-                              color: ColorConversion.colorsMap[snapshot.data![index].color]!, 
-                              groupName: snapshot.data![index].name, 
-                              width: (size.width - 30) * 0.5, 
-                              onTap: () async {
-                                await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
-                                navigation(page: GroupPage(groupID: snapshot.data![index].id), index: index);
-                              }, 
-                              onLongPress: () {
-                                navigation(
-                                  page: ActionGroupPage(
-                                    action: ActionsEnum.update,
-                                    groupData: snapshot.data![index]
-                                  ),
-                                  index: index
-                                );
-                              }
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: GroupCard(
+                                color: ColorConversion.colorsMap[snapshot.data![index].color]!,
+                                groupName: snapshot.data![index].name,
+                                width: (size.width - 30) * 0.5,
+                                onTap: () async {
+                                  await _db.selectExpensesByGroup(
+                                    groupID: snapshot.data![index].id,
+                                  );
+                                  navigation(
+                                    page: GroupPage(
+                                      groupID: snapshot.data![index].id,
+                                    ),
+                                    index: index,
+                                  );
+                                },
+                                onLongPress: () {
+                                  navigation(
+                                    page: ActionGroupPage(
+                                      action: ActionsEnum.update,
+                                      groupData: snapshot.data![index],
+                                    ),
+                                    index: index
+                                  );
+                                }
+                              ),
                             );
                           }
                         );
@@ -173,17 +165,19 @@ class _HomePageState extends State<HomePage> with ChangePage {
     await _db.selectGroups();
   }
 
-  void navigation({required Widget page, int index = 0}) {
-    if (_db.groupsWithoutFuture.isEmpty && page.runtimeType != ActionGroupPage) { return; }
+  void navigation({required Widget page, int? index = 0}) {
+    if (_db.groupsWithoutFuture.isEmpty && page.runtimeType != ActionGroupPage) {
+      return;
+    }
 
     goNextPage(
-      context: context, 
-      index: index, 
+      context: context,
+      index: index ?? 0,
       page: page,
       thenFunction: ({response}) async {
         await _db.selectGroups();
         setState(() {});
-      }
+      },
     );
   }
 }

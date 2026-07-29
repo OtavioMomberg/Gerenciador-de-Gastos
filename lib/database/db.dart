@@ -272,13 +272,12 @@ class DB {
 
     args = checkQuery ? [groupID] : [groupID, paymentMethod];
 
-    int monthAsInt = 0;
     if (day != null && month != null) {
       params += " AND (${DbColumnsInfo.dateExpenseTable} LIKE ?";
       params += " OR ${DbColumnsInfo.dateExpenseTable} LIKE ?)";
 
       final int year = DateTime.now().year;
-      monthAsInt = int.parse(month);
+      final int monthAsInt = int.parse(month);
       
       if (month.length == 1) { month = "0$month"; }
       final date = "%/$month/$year";
@@ -297,34 +296,7 @@ class DB {
       );
 
       if (query.isEmpty) { return []; }
-
-      List<ExpenseRead> expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
-
-      if (day != null && month != null) {
-        int dayAsInt = int.parse(day);
-        int length = expenses.length;
-        List<int> indexToRemove = [];
-        indexToRemove.clear();
-
-        for (int i=0; i<length; i++) {
-          if (int.parse(expenses[i].date.substring(3, 5)) == monthAsInt) {
-            if (int.parse(expenses[i].date.substring(0, 2)) >= dayAsInt) {
-              indexToRemove.add(i);
-            }
-          } else {
-            if (int.parse(expenses[i].date.substring(0, 2)) < dayAsInt) {
-              indexToRemove.add(i);
-            }
-          }
-        }
-
-        int aux = 0;
-        for (var index in indexToRemove) {
-          expenses.removeAt(index-aux);
-          aux++;
-        }
-        indexToRemove.clear();
-      }
+      final List<ExpenseRead> expenses = query.map((expense) => ExpenseRead.fromMap(map: expense)).toList();
 
       return expenses;
     } catch (error) {

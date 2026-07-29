@@ -60,10 +60,36 @@ class DatabaseService {
     expenses = database.selectExpensesByGroupAndPaymentMethod(
       groupID: groupID, 
       paymentMethod: paymentMethod,
-      day: day?.length == 1 ? "0$day" : day,
+      day: day,
       month: month
     );
     expensesWithoutFuture = await expenses;
+
+    if (day != null && month != null) {
+      final int length = expensesWithoutFuture.length;
+      final int monthAsInt = int.parse(month); 
+      final int dayAsInt = int.parse(day);
+      final List<int> indexToRemove = [];
+
+      for (int i=0; i<length; i++) {
+        if (int.parse(expensesWithoutFuture[i].date.substring(3, 5)) == monthAsInt) {
+          if (int.parse(expensesWithoutFuture[i].date.substring(0, 2)) >= dayAsInt) { 
+            indexToRemove.add(i); 
+          }
+        } else {
+          if (int.parse(expensesWithoutFuture[i].date.substring(0, 2)) < dayAsInt) { 
+            indexToRemove.add(i); 
+          }
+        }
+      }
+
+      int aux = 0;
+      for (var index in indexToRemove) {
+        expensesWithoutFuture.removeAt(index-aux);
+        aux++;
+      }
+      indexToRemove.clear();
+    }
   }
 
   Future<void> addExpense({required ExpenseWrite expenseData}) async {

@@ -21,6 +21,8 @@ class GroupCard extends StatelessWidget {
     return Material(
       color: color,
       borderRadius: BorderRadius.circular(10),
+      elevation: 5,
+      shadowColor: color,
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: onTap,

@@ -28,7 +28,10 @@ class ExpenseCard extends StatelessWidget with ChangePage {
       color: groupService.indexList.contains(index)
         ? groupService.colors[1]
         : groupService.colors[0],
-      type: MaterialType.card,
+      elevation: 5,
+      shadowColor: groupService.indexList.contains(index)
+        ? groupService.colors[1]
+        : groupService.colors[0],
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),

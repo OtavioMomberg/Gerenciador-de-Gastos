@@ -58,8 +58,7 @@ class _GroupPageState extends State<GroupPage>
           ),
           IconButton(
             onPressed: () async {
-              final message =
-                  "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.";
+              final message = "Tem certeza que deseja apagar o grupo?\nTodos os gastos do grupo serão apagados também.";
               if (await deleteProcess(message: message)) {
                 await _db.deleteGroup(groupID: widget.groupID);
                 await _db.selectGroups();
@@ -100,9 +99,9 @@ class _GroupPageState extends State<GroupPage>
                       groupService.isExpenseSelected = !groupService.isExpenseSelected;
                       groupService.indexList.clear();
                     }
-                  },
-                ),
-              ),
+                  }
+                )
+              )
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -136,17 +135,17 @@ class _GroupPageState extends State<GroupPage>
                           expense: snapshot.data![index],
                           length: snapshot.data!.length,
                           setStateCallback: () => setState(() {}),
-                          thenFunction: thenFunction,
-                        ),
+                          thenFunction: thenFunction
+                        )
                       );
-                    },
+                    }
                   );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+                }
+              )
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -160,9 +159,9 @@ class _GroupPageState extends State<GroupPage>
             "Filtro",
             style: TextStyle(
               color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+              fontWeight: FontWeight.bold
+            )
+          )
         ),
         content: Column(
           mainAxisSize: .min,
@@ -179,10 +178,10 @@ class _GroupPageState extends State<GroupPage>
               inputType: TextInputType.number,
             ),
             const SizedBox(height: 10),
-            Button(label: "Filtrar", height: 60, function: checkValues),
-          ],
-        ),
-      ),
+            Button(label: "Filtrar", height: 60, function: checkValues)
+          ]
+        )
+      )
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 mixin ErrorDialog {
   void showError({
@@ -16,17 +17,14 @@ mixin ErrorDialog {
           closeDialog();
         });
         return AlertDialog(
-          backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+          backgroundColor: AppThemes.color3,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12)
+            borderRadius: AppThemes.borderRadius
           ),
           title: Center(
             child: Text(
               title,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 136, 136, 136),
-                fontWeight: FontWeight.bold
-              )
+              style: AppThemes.textStyle
             )
           ),
           content: Column(
@@ -35,10 +33,7 @@ mixin ErrorDialog {
               const SizedBox(height: 20),
               Text(
                 content,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
-                  fontWeight: FontWeight.bold
-                )
+                style: AppThemes.textStyle
               ),
               const SizedBox(height: 20)
             ]

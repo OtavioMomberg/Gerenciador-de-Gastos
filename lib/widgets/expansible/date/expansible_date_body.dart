@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/widgets/expansible/date/date_list_view.dart';
 
@@ -17,8 +18,8 @@ class ExpansibleDateBody extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       height: 200,
       child: Padding(
@@ -31,10 +32,7 @@ class ExpansibleDateBody extends StatelessWidget {
                 controller: controller, 
                 setStateCallback: setStateCallback, 
                 option: ListOption.days, 
-                range: {
-                  "start": 0,
-                  "end": 3
-                }
+                range: {"start": 0, "end": 3}
               )
             ),
             Expanded(
@@ -42,10 +40,7 @@ class ExpansibleDateBody extends StatelessWidget {
                 controller: controller, 
                 setStateCallback: setStateCallback, 
                 option: ListOption.months, 
-                range: {
-                  "start": 3,
-                  "end": 6
-                }
+                range: {"start": 3, "end": 6}
               )
             ),
             Expanded(
@@ -53,10 +48,7 @@ class ExpansibleDateBody extends StatelessWidget {
                 controller: controller, 
                 setStateCallback: setStateCallback, 
                 option: ListOption.years, 
-                range: {
-                  "start": 6,
-                  "end": 10
-                }
+                range: {"start": 6, "end": 10}
               )
             )
           ]

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 
@@ -20,29 +21,22 @@ class ExpansibleBody extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       height: 250,
       child: ListView(
-        children: [
+        children: <Widget>[
           const SizedBox(height: 10),
           ...List.generate(ColorConversion.listColors.length, (int index) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: InkWell(
-                onTap: () {
-                  _color.cor = ColorConversion.colorsMap[ColorConversion.listColors[index]]!;
-                  _controller.groupColor!.text = ColorConversion.listColors[index].toString();
-                  setStateCallback();
-                  controller.collapse();
-                },
+                onTap: () => saveColor(index: index),
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 136, 136, 136),
-                    ),
+                    borderRadius: AppThemes.borderRadius,
+                    border: Border.all(color: AppThemes.color4),
                     color: ColorConversion.colorsMap[ColorConversion.listColors[index]]!,
                   ),
                   height: 60,
@@ -56,5 +50,12 @@ class ExpansibleBody extends StatelessWidget {
         ]
       )
     );
+  }
+
+  void saveColor({required int index}) {
+    _color.cor = ColorConversion.colorsMap[ColorConversion.listColors[index]]!;
+    _controller.groupColor!.text = ColorConversion.listColors[index].toString();
+    setStateCallback();
+    controller.collapse();
   }
 }

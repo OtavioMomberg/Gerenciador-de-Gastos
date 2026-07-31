@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/expense_read.dart';
@@ -21,7 +22,11 @@ class ActionExpensePage extends StatefulWidget {
   final ActionsEnum action;
   final ExpenseRead? expenseData;
 
-  const ActionExpensePage({required this.action, this.expenseData, super.key});
+  const ActionExpensePage({
+    required this.action, 
+    this.expenseData, 
+    super.key
+  });
 
   @override
   State<ActionExpensePage> createState() => _ActionExpensePageState();
@@ -47,7 +52,6 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     } else {
       _controller.getExpenseData(expenseData: widget.expenseData!);
     }
-
     _expansibleVariables.buildYear(currentYear: DateTime.now().year);
   }
 
@@ -55,23 +59,22 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
-        foregroundColor: const Color.fromARGB(255, 136, 136, 136),
+        backgroundColor: AppThemes.color3,
+        foregroundColor: AppThemes.color4,
         surfaceTintColor: Colors.transparent,
       ),
-      backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+      backgroundColor: AppThemes.color3,
       body: Container(
-        color: const Color.fromARGB(255, 234, 242, 252),
+        color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
             spacing: 20,
             children: <Widget>[
               Text(
-                widget.action == ActionsEnum.update 
-                ? "Atualizar Gasto" : "Adicionar Gasto",
+                widget.action == ActionsEnum.update ? "Atualizar Gasto" : "Adicionar Gasto",
                 style: TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
+                  color: AppThemes.color4,
                   fontSize: 30,
                   fontWeight: FontWeight.bold
                 )
@@ -185,7 +188,16 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
         }
         await _db.selectExpensesByGroup(groupID: widget.expenseData!.groupID);
       }
-      showSnackBar(check: check);
+
+      if (!mounted) { return; }
+      showColoredSnackBar(
+      context: context, 
+      msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
+      txtColor: const Color.fromARGB(255, 210, 232, 236)
+      );
+      check ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
+
+      setState(() {});
       return;
     }
     showError(
@@ -196,22 +208,8 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     );
   }
 
-  void showSnackBar({required bool check}) {
-   showColoredSnackBar(
-    context: context, 
-    msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
-    txtColor: const Color.fromARGB(255, 210, 232, 236)
-    );
-    check ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
-
-    if (!mounted) { return; }
-    setState(() {});
-  }
-
   void closeDialog() {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) { return; }
     Navigator.pop(context);
   }
 

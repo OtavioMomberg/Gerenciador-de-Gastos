@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 
 class ExpansiblePaymentHeader extends StatelessWidget {
@@ -17,8 +18,8 @@ class ExpansiblePaymentHeader extends StatelessWidget {
   Widget build(BuildContext context) {    
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       child: Row(
         mainAxisAlignment: .spaceEvenly,
@@ -31,7 +32,7 @@ class ExpansiblePaymentHeader extends StatelessWidget {
               child: Text(
                 expansibleVariables.groupPayment,
                 style: TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
+                  color: AppThemes.color4,
                   fontWeight: expansibleVariables.groupPayment != ExpansibleVariables.payment
                     ? FontWeight.bold : FontWeight.normal
                 )
@@ -48,7 +49,7 @@ class ExpansiblePaymentHeader extends StatelessWidget {
               },
               icon: Icon(
                 controller.isExpanded ? Icons.arrow_upward : Icons.arrow_downward,
-                color: const Color.fromARGB(255, 136, 136, 136),
+                color: AppThemes.color4,
                 fontWeight: FontWeight.bold
               )
             )

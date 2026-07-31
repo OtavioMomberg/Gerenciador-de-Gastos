@@ -8,7 +8,7 @@ class SortImage {
   }
 
   static final Map<int, String> imageMap = {
-    0: "assets/images/dash.png",
+    0: "assets/images/dash_1.png",
     1: "assets/images/dash_2.png",
     2: "assets/images/dash_3.png",
     3: "assets/images/dash_4.png"

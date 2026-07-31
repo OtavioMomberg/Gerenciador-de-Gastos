@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 class TextInput extends StatelessWidget {
-  final TextEditingController controller;
   final String textHint;
+  final TextEditingController controller;
   final TextInputType? inputType;
 
   const TextInput({
-    required this.controller,
     required this.textHint,
+    required this.controller,
     this.inputType = TextInputType.text,
     super.key
   });
@@ -17,32 +18,29 @@ class TextInput extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: inputType,
-      cursorColor: const Color.fromARGB(255, 136, 136, 136),
-      style: const TextStyle(
-        color: Color.fromARGB(255, 136, 136, 136),
-        fontWeight: FontWeight.bold,
-      ),
+      cursorColor: AppThemes.color1,
+      style: AppThemes.textStyle,
       decoration: InputDecoration(
         hint: Text(
           textHint,
-          style: const TextStyle(color: Color.fromARGB(255, 136, 136, 136))
+          style: AppThemes.textStyle
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppThemes.borderRadius,
           borderSide: BorderSide(
-            color: const Color.fromARGB(255, 136, 136, 136)
+            color: AppThemes.color1
           )
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppThemes.borderRadius,
           borderSide: BorderSide(
-            color: const Color.fromARGB(255, 136, 136, 136)
+            color: AppThemes.color1
           )
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppThemes.borderRadius,
           borderSide: BorderSide(
-            color: const Color.fromARGB(255, 136, 136, 136)
+            color: AppThemes.color1
           )
         )
       )

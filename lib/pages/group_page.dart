@@ -21,7 +21,7 @@ class GroupPage extends StatefulWidget {
 class _GroupPageState extends State<GroupPage>
     with ErrorDialog, ConfirmationDialog, ShowColoredSnackBar, ChangePage {
   final _db = DatabaseService.instance();
-  final groupService = GroupService.instance();
+  final _groupService = GroupService.instance();
   final month = TextEditingController();
   final year = TextEditingController();
 
@@ -80,11 +80,11 @@ class _GroupPageState extends State<GroupPage>
         child: Column(
           children: <Widget>[
             IgnorePointer(
-              ignoring: groupService.isExpenseSelected ? false : true,
+              ignoring: _groupService.isExpenseSelected ? false : true,
               child: AnimatedOpacity(
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                opacity: groupService.isExpenseSelected ? 1.0 : 0.0,
+                opacity: _groupService.isExpenseSelected ? 1.0 : 0.0,
                 child: Button(
                   label: "Apagar Selecionados",
                   height: 60,
@@ -93,15 +93,15 @@ class _GroupPageState extends State<GroupPage>
                       message: "Tem certeza que deseja apagar esses gastos?",
                     )) {
                       await _db.deleteSelectedExpenses(
-                        expenseID: groupService.indexList,
+                        expenseID: _groupService.indexList,
                       );
                       showResponse(message: "Gastos removidos com sucesso!");
-                      groupService.isExpenseSelected = !groupService.isExpenseSelected;
-                      groupService.indexList.clear();
+                      _groupService.updateIsExpenseSelected();
+                      _groupService.indexList.clear();
                     }
-                  }
-                )
-              )
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -135,17 +135,17 @@ class _GroupPageState extends State<GroupPage>
                           expense: snapshot.data![index],
                           length: snapshot.data!.length,
                           setStateCallback: () => setState(() {}),
-                          thenFunction: thenFunction
-                        )
+                          thenFunction: thenFunction,
+                        ),
                       );
-                    }
+                    },
                   );
-                }
-              )
-            )
-          ]
-        )
-      )
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -159,9 +159,9 @@ class _GroupPageState extends State<GroupPage>
             "Filtro",
             style: TextStyle(
               color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold
-            )
-          )
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         content: Column(
           mainAxisSize: .min,
@@ -178,10 +178,10 @@ class _GroupPageState extends State<GroupPage>
               inputType: TextInputType.number,
             ),
             const SizedBox(height: 10),
-            Button(label: "Filtrar", height: 60, function: checkValues)
-          ]
-        )
-      )
+            Button(label: "Filtrar", height: 60, function: checkValues),
+          ],
+        ),
+      ),
     );
   }
 
@@ -236,14 +236,18 @@ class _GroupPageState extends State<GroupPage>
     month.clear();
     year.clear();
 
-    if (!mounted) { return; }
+    if (!mounted) {
+      return;
+    }
     Navigator.pop(context);
   }
 
   void closeDialog() {
     month.clear();
     year.clear();
-    if (!mounted) { return;}
+    if (!mounted) {
+      return;
+    }
     Navigator.pop(context);
   }
 
@@ -257,7 +261,9 @@ class _GroupPageState extends State<GroupPage>
   }
 
   void showResponse({required String message}) {
-    if (!mounted) { return; }
+    if (!mounted) {
+      return;
+    }
 
     showColoredSnackBar(
       context: context,
@@ -278,7 +284,9 @@ class _GroupPageState extends State<GroupPage>
 
   void thenFunction({bool? response}) async {
     await _db.selectExpensesByGroup(groupID: widget.groupID);
-    if (!mounted) { return; }
+    if (!mounted) {
+      return;
+    }
     setState(() {});
   }
 

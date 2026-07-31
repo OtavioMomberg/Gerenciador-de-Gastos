@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/widgets/text_with_divider.dart';
 
 class GeneralInfoCard extends StatelessWidget {
@@ -12,16 +13,16 @@ class GeneralInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color.fromARGB(255, 210, 232, 236),
-      borderRadius: BorderRadius.circular(10),
-      shadowColor: const Color.fromARGB(255, 210, 232, 236),
+      color: AppThemes.color1,
+      borderRadius: AppThemes.borderRadius,
+      shadowColor: AppThemes.color1,
       elevation: 10,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(borderRadius: AppThemes.borderRadius),
         child: Column(
-          children: [
+          children: <Widget>[
             ...List.generate(infoList.length, (index) {
               return TextWithDivider(content: infoList[index]);
             })

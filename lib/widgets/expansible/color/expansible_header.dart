@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 
 class ExpansibleHeader extends StatelessWidget {
@@ -19,16 +20,16 @@ class ExpansibleHeader extends StatelessWidget {
     
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       child: Row(
         mainAxisAlignment: .center,
         spacing: 10,
-        children: [
+        children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppThemes.borderRadius,
               color: _color.cor
             ),
             margin: EdgeInsets.all(5),
@@ -36,10 +37,8 @@ class ExpansibleHeader extends StatelessWidget {
             width: size.width * 0.5,
             child: Center(
               child: Text(
-                _color.cor == Color.fromARGB(255, 234, 242, 252) ? "Selecione uma cor" : "",
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136)
-                )
+                _color.cor == AppThemes.color3 ? "Selecione uma cor" : "",
+                style: const TextStyle(color: AppThemes.color4)
               )
             )
           ),
@@ -54,7 +53,7 @@ class ExpansibleHeader extends StatelessWidget {
               controller.isExpanded
                 ? Icons.arrow_upward
                 : Icons.arrow_downward,
-              color: const Color.fromARGB(255, 136, 136, 136),
+              color: AppThemes.color4,
               fontWeight: FontWeight.bold
             )
           )

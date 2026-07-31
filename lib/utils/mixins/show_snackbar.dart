@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 mixin ShowColoredSnackBar {
   Future<void> showColoredSnackBar({
@@ -12,10 +13,7 @@ mixin ShowColoredSnackBar {
         content: Center(
           child: Text(
             msm, 
-            style: const TextStyle(
-              color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold
-            )
+            style: AppThemes.textStyle
           )
         ),
         backgroundColor: txtColor.withValues(alpha: 0.9),

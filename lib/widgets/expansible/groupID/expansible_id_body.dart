@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 
@@ -15,15 +16,15 @@ class ExpansibleIdBody extends StatelessWidget {
 
   final _controller = ControllerUtils.instance();
   final _db = DatabaseService.instance();
-  final expansibleVariables = ExpansibleVariables.instance();
+  final _expansibleVariables = ExpansibleVariables.instance();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       height: 250,
       child: ListView.builder(
@@ -32,31 +33,30 @@ class ExpansibleIdBody extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(5),
             child: Material(
-                child: ListTile(
-                  onTap: () {
-                    expansibleVariables.groupName = _db.groupsWithoutFuture[index].name;
-                    _controller.expenseGroupID!.text = _db.groupsWithoutFuture[index].id.toString();
-                    setStateCallback();
-                    controller.collapse();
-                  },
-                  title: Center(
-                    child: Text(
-                      _db.groupsWithoutFuture[index].name,
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                        fontWeight: FontWeight.bold
-                      )
-                    )
-                  ),
-                  tileColor: const Color.fromARGB(255, 210, 232, 236),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
+              child: ListTile(
+                onTap: () => saveGroupID(index: index),
+                title: Center(
+                  child: Text(
+                    _db.groupsWithoutFuture[index].name,
+                    style: AppThemes.textStyle
                   )
+                ),
+                tileColor: AppThemes.color1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: AppThemes.borderRadius
                 )
               )
-            );
+            )
+          );
         }
       )
     );
+  }
+  
+  void saveGroupID({required int index}) {
+    _expansibleVariables.groupName = _db.groupsWithoutFuture[index].name;
+    _controller.expenseGroupID!.text = _db.groupsWithoutFuture[index].id.toString();
+    setStateCallback();
+    controller.collapse();
   }
 }

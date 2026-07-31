@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/widgets/button.dart';
@@ -24,8 +25,8 @@ class ExpansiblePaymentBody extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color.fromARGB(255, 136, 136, 136)),
+        borderRadius: AppThemes.borderRadius,
+        border: Border.all(color: AppThemes.color4),
       ),
       height: 200,
       child: ListView(
@@ -36,26 +37,17 @@ class ExpansiblePaymentBody extends StatelessWidget {
               child: Material(
                 child: ListTile(
                   onTap: () {
-                    _expansibleVariables.groupPayment = paymentList[index];
-                    _controller.expensePaymentMethod!.text = paymentList[index];
-                    controller.collapse();
-                    setStateCallback();
-                    if (paymentList[index] == "Crédito" && paymentList.length < 4) {
-                      setInstallments(context: context);
-                    }
+                    savePaymentMethod(index: index, context: context);
                   },
                   title: Center(
                     child: Text(
                       paymentList[index],
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                        fontWeight: FontWeight.bold
-                      )
+                      style: AppThemes.textStyle
                     )
                   ),
-                  tileColor: const Color.fromARGB(255, 210, 232, 236),
+                  tileColor: AppThemes.color1,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
+                    borderRadius: AppThemes.borderRadius
                   )
                 )
               )
@@ -66,19 +58,26 @@ class ExpansiblePaymentBody extends StatelessWidget {
     );
   }
 
+  void savePaymentMethod({required int index, required BuildContext context}) {
+    _expansibleVariables.groupPayment = paymentList[index];
+    _controller.expensePaymentMethod!.text = paymentList[index];
+    controller.collapse();
+    setStateCallback();
+    if (paymentList[index] == ExpansibleVariables.payment2 && paymentList.length < 4) {
+      setInstallments(context: context);
+    }
+  }
+
   void setInstallments({required BuildContext context}) {
     showDialog(
       context: context, 
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        backgroundColor: AppThemes.color3,
         title: Center(
           child: const Text(
             "Parcelas",
-            style: TextStyle(
-              color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold
-            )
+            style: AppThemes.textStyle
           )
         ),
         content: Column(

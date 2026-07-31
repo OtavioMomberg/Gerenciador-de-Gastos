@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 class FieldViewWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -15,30 +16,24 @@ class FieldViewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color.fromARGB(255, 210, 232, 236),
-      shadowColor: const Color.fromARGB(255, 210, 232, 236),
+      color: AppThemes.color1,
+      shadowColor: AppThemes.color1,
       elevation: 5,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppThemes.borderRadius,
       child: SizedBox(
         height: 60,
         child: Center(
           child: TextField(
             controller: controller,
             focusNode: focusNode,
-            style: const TextStyle(
-              color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
-            cursorColor: const Color.fromARGB(255, 136, 136, 136),
+            style: AppThemes.textStyle,
+            cursorColor: AppThemes.color4,
             decoration: InputDecoration(
               hintText: "Pesquisar",
-              hintStyle: const TextStyle(
-                color: Color.fromARGB(255, 136, 136, 136),
-                fontWeight: FontWeight.bold,
-              ),
+              hintStyle: AppThemes.textStyle,
               prefixIcon: const Icon(
                 Icons.search,
-                color: Color.fromARGB(255, 136, 136, 136),
+                color: AppThemes.color4,
                 fontWeight: FontWeight.bold,
               ),
               suffixIcon: controller.text.isNotEmpty
@@ -46,15 +41,15 @@ class FieldViewWidget extends StatelessWidget {
                     onPressed: () => controller.clear(),
                     icon: const Icon(
                       Icons.close,
-                      color: Color.fromARGB(255, 136, 136, 136),
+                      color: AppThemes.color4,
                       fontWeight: FontWeight.bold,
                     ),
                   )
                 : null,
               filled: true,
-              fillColor: const Color.fromARGB(255, 210, 232, 236),
+              fillColor: AppThemes.color1,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppThemes.borderRadius,
                 borderSide: BorderSide.none
               )
             )

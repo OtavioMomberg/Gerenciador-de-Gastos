@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/group_read.dart';
@@ -18,7 +19,12 @@ import 'package:gerenciador_gastos_v2/widgets/text_input.dart';
 class ActionGroupPage extends StatefulWidget {
   final ActionsEnum action;
   final GroupRead? groupData;
-  const ActionGroupPage({required this.action, this.groupData, super.key});
+
+  const ActionGroupPage({
+    required this.action, 
+    this.groupData, 
+    super.key
+  });
 
   @override
   State<ActionGroupPage> createState() => _ActionGroupPageState();
@@ -50,26 +56,24 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
-        foregroundColor: const Color.fromARGB(255, 136, 136, 136),
+        backgroundColor: AppThemes.color3,
+        foregroundColor: AppThemes.color4,
         surfaceTintColor: Colors.transparent,
       ),
-      backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+      backgroundColor: AppThemes.color3,
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        color: const Color.fromARGB(255, 234, 242, 252),
+        color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
             spacing: 15,
             children: <Widget>[
               Text(
-                widget.action == ActionsEnum.update
-                  ? "Atualizar Grupo"
-                  : "Criar Grupo",
+                widget.action == ActionsEnum.update ? "Atualizar Grupo" : "Criar Grupo",
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 136, 136, 136),
+                  color: AppThemes.color4,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
@@ -92,9 +96,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
               ),
               const SizedBox(height: 20),
               Button(
-                label: widget.action == ActionsEnum.update
-                  ? "Atualizar Grupo"
-                  : "Criar Grupo",
+                label: widget.action == ActionsEnum.update ? "Atualizar Grupo" : "Criar Grupo",
                 height: 60,
                 function: executeAction,
               ),
@@ -117,59 +119,39 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
     _controller.groupID!.text = widget.groupData!.id.toString();
   }
 
-  void executeAction() {
-    final bool check = checkData();
+  void executeAction() async {
+    if (_controller.checkGroupFields(context: context, closeDialog: closeDialog)) { 
+      final groupData = GroupWrite(
+        name: _controller.groupName!.text,
+        color: _controller.groupColor!.text,
+      );
 
-    if (!check) {
+      final checkAction = widget.action == ActionsEnum.create;
+      checkAction
+        ? await _db.addGroup(groupData: groupData)
+        : await _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID!.text));
+
+      if (!mounted) { return; }
+      showColoredSnackBar(
+        context: context,
+        msm: checkAction
+          ? "Grupo criado com sucesso!"
+          : "Grupo atualizado com sucesso!",
+        txtColor: const Color.fromARGB(255, 210, 232, 236)
+      );
+      Navigator.pop(context);
       return;
     }
-
-    final groupData = GroupWrite(
-      name: _controller.groupName!.text,
-      color: _controller.groupColor!.text,
-    );
-    final checkAction = widget.action == ActionsEnum.create;
-    checkAction
-      ? _db.addGroup(groupData: groupData)
-      : _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID!.text));
-
-    showColoredSnackBar(
+    showError(
       context: context,
-      msm: checkAction
-        ? "Grupo criado com sucesso!"
-        : "Grupo atualizado com sucesso!",
-      txtColor: const Color.fromARGB(255, 210, 232, 236)
+      title: "⚠️  Erro  ⚠️",
+      content: "Nome ou Cor não informados.",
+      closeDialog: closeDialog,
     );
-
-    Navigator.pop(context);
-  }
-
-  bool checkData() {
-    if (_controller.groupName!.text.isEmpty && _controller.groupColor!.text.isEmpty) {
-      showError(
-        context: context,
-        title: "⚠️  Erro  ⚠️",
-        content: "Nome ou Cor não informados.",
-        closeDialog: closeDialog,
-      );
-      return false;
-    }
-    if (!_controller.groupName!.text[0].contains(RegExp("[aA-zZ]"))) {
-      showError(
-        context: context,
-        title: "⚠️  Erro  ⚠️",
-        content: "O nome deve começar com uma letra.",
-        closeDialog: closeDialog,
-      );
-      return false;
-    }
-    return true;
   }
 
   void closeDialog() {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) { return; }
     Navigator.pop(context);
   }
 

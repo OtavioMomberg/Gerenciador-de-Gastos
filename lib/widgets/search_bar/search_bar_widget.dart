@@ -8,7 +8,10 @@ import 'package:gerenciador_gastos_v2/widgets/search_bar/options_view_widget.dar
 class SearchBarWidget extends StatelessWidget {
   final void Function({required Widget page, int? index}) navigation;
 
-  SearchBarWidget({required this.navigation, super.key});
+  SearchBarWidget({
+    required this.navigation, 
+    super.key
+  });
 
   final _db = DatabaseService.instance();
 
@@ -21,7 +24,7 @@ class SearchBarWidget extends StatelessWidget {
         }
         return _db.groupsWithoutFuture.where((group) {
           return group.name.toLowerCase().contains(
-            textEditingValue.text.toLowerCase(),
+            textEditingValue.text.toLowerCase()
           );
         });
       },
@@ -41,6 +44,7 @@ class SearchBarWidget extends StatelessWidget {
           onFieldSubmitted: onFieldSubmitted
         );
       },
+      
       optionsViewBuilder: (context, onSelected, options) {
         return Padding(
           padding: const EdgeInsets.only(top: 5),

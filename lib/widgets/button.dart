@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 class Button extends StatelessWidget {
   final String label;
@@ -19,12 +20,12 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(12),
-      color: const Color.fromARGB(255, 210, 232, 236),
+      borderRadius: AppThemes.borderRadius,
+      color: AppThemes.color1,
       elevation: 5,
-      shadowColor: const Color.fromARGB(255, 196, 222, 226),
+      shadowColor: AppThemes.color1,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppThemes.borderRadius,
         onTap: () {
           if (function != null) {
             function!();
@@ -38,20 +39,17 @@ class Button extends StatelessWidget {
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color.fromARGB(255, 210, 232, 236)),
+            borderRadius: AppThemes.borderRadius,
+            border: Border.all(color: AppThemes.color1),
           ),
           child: Center(
             child: Text(
               label,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 136, 136, 136),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ),
+              style: AppThemes.textStyle
+            )
+          )
+        )
+      )
     );
   }
 }

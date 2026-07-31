@@ -13,9 +13,15 @@ class ExpansibleVariables {
   String groupDate = date;
   String groupPayment = payment;
 
-  final List<String> paymentMethods = List.unmodifiable(["Débito", "Crédito", "PIX"]);
+  static const String payment1 = "Débito";
+  static const String payment2 = "Crédito";
+  static const String payment3 = "PIX";
+  static const String payment4 = "Todos";
 
-  final List<String> paymentMethodsCalculation = List.unmodifiable(["Débito", "Crédito", "PIX", "Todos"]);
+
+  final List<String> paymentMethods = List.unmodifiable([payment1, payment2, payment3]);
+
+  final List<String> paymentMethodsCalculation = List.unmodifiable([payment1, payment2, payment3, payment4]);
 
   final List<int> days = List.unmodifiable(List.generate(31, (index) => index + 1));
 

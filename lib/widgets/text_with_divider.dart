@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 
 class TextWithDivider extends StatelessWidget {
   final String content;
-  const TextWithDivider({required this.content, super.key});
+
+  const TextWithDivider({
+    required this.content, 
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +16,9 @@ class TextWithDivider extends StatelessWidget {
       children: <Widget>[
         Text(
           content,
-          style: TextStyle(
-            color: const Color.fromARGB(255, 136, 136, 136),
-            fontWeight: FontWeight.bold
-          )
+          style: AppThemes.textStyle
         ),
-        const Divider(color: Color.fromARGB(255, 136, 136, 136))
+        const Divider(color: AppThemes.color4)
       ]
     );
   }

@@ -92,4 +92,20 @@ class ControllerUtils with ErrorDialog {
     }
     return true;
   }
+
+  bool checkGroupFields({required BuildContext context, required VoidCallback closeDialog}) {
+    if (groupName!.text.isEmpty) { return false; }
+    if (groupColor!.text.isEmpty) { return false; }
+
+    if (!groupName!.text[0].contains(RegExp("[aA-zZ]"))) {
+      showError(
+        context: context,
+        title: "⚠️  Erro  ⚠️",
+        content: "O nome deve começar com uma letra.",
+        closeDialog: closeDialog,
+      );
+      return false;
+    }
+    return true;
+  }
 }

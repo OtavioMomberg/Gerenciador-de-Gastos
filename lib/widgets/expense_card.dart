@@ -2,41 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/models/expense_read.dart';
 import 'package:gerenciador_gastos_v2/pages/expand_card_page.dart';
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 
 class ExpenseCard extends StatelessWidget with ChangePage {
   final int index;
-  final void Function({bool? response})? thenFunction;
-  final VoidCallback setStateCallback;
-  final ExpenseRead expense;
   final int length;
+  final ExpenseRead expense;
+  final VoidCallback setStateCallback;
+  final void Function({bool? response})? thenFunction;
 
   ExpenseCard({
     required this.index,
-    required this.setStateCallback,
-    required this.expense,
     required this.length,
+    required this.expense,
+    required this.setStateCallback,
     this.thenFunction,
     super.key,
   });
 
-  final groupService = GroupService.instance();
+  final _groupService = GroupService.instance();
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: groupService.indexList.contains(index)
-        ? groupService.colors[1]
-        : groupService.colors[0],
+      color: _groupService.indexList.contains(index)
+        ? AppThemes.color2
+        : AppThemes.color1,
       elevation: 5,
-      shadowColor: groupService.indexList.contains(index)
-        ? groupService.colors[1]
-        : groupService.colors[0],
-      borderRadius: BorderRadius.circular(10),
+      shadowColor: _groupService.indexList.contains(index)
+        ? AppThemes.color2
+        : AppThemes.color1,
+      borderRadius: AppThemes.borderRadius,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppThemes.borderRadius,
         onTap: () {
-          groupService.isExpenseSelected
+          _groupService.isExpenseSelected
             ? selectCard()
             : changePage(context: context);
         },
@@ -54,17 +55,11 @@ class ExpenseCard extends StatelessWidget with ChangePage {
                   children: <Widget>[
                     Text(
                       expense.name,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                        fontWeight: FontWeight.bold
-                      )
+                      style: AppThemes.textStyle
                     ),
                     Text(
                       expense.date,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 136, 136, 136),
-                        fontWeight: FontWeight.bold
-                      )
+                      style: AppThemes.textStyle
                     )
                   ]
                 )
@@ -73,10 +68,7 @@ class ExpenseCard extends StatelessWidget with ChangePage {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                   "R\$ ${expense.price}",
-                  style: const TextStyle(
-                    color: Color.fromARGB(255, 136, 136, 136),
-                    fontWeight: FontWeight.bold
-                  )
+                  style: AppThemes.textStyle
                 )
               )
             ]
@@ -87,21 +79,16 @@ class ExpenseCard extends StatelessWidget with ChangePage {
   }
 
   void selectCard() {
-    if (groupService.cardIndex == index && groupService.indexList.length > 1) {
-      return;
-    }
-    if (groupService.cardIndex == index && groupService.indexList.length == 1) {
-      groupService.isExpenseSelected = !groupService.isExpenseSelected;
-      groupService.indexList.clear();
-      setStateCallback();
-      return;
-    }
+    final bool? result = _groupService.checkCardIndex(index: index);
 
-    if (groupService.indexList.contains(index)) {
-      groupService.indexList.remove(index);
-    } else {
-      groupService.indexList.add(index);
+    if (result != null) {
+      if (result) {
+        setStateCallback();
+      }
+      return;
     }
+    _groupService.checkIndexList(index: index);
+
     setStateCallback();
   }
 
@@ -115,20 +102,13 @@ class ExpenseCard extends StatelessWidget with ChangePage {
   }
 
   void unlockSelectOption() {
-    if (groupService.indexList.isNotEmpty) {
-      if (!groupService.indexList.contains(index)) {
-        return;
-      }
+    if (!_groupService.checkOnLongPressIndexList(index: index)) {
+      return;
     }
+    _groupService.updateOnLongPressValues(index: index);
 
-    groupService.cardIndex = index;
-    groupService.isExpenseSelected = !groupService.isExpenseSelected;
+    _groupService.checkExpenseSelected(index: index);
 
-    if (groupService.isExpenseSelected) {
-      groupService.indexList.add(index);
-    } else {
-      groupService.indexList.clear();
-    }
     setStateCallback();
   }
 }

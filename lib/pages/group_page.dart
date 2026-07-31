@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
@@ -22,39 +23,32 @@ class _GroupPageState extends State<GroupPage>
     with ErrorDialog, ConfirmationDialog, ShowColoredSnackBar, ChangePage {
   final _db = DatabaseService.instance();
   final _groupService = GroupService.instance();
-  final month = TextEditingController();
-  final year = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        backgroundColor: AppThemes.color3,
         surfaceTintColor: Colors.transparent,
         title: const Text(
           "Meus Gastos",
-          style: TextStyle(
-            color: Color.fromARGB(255, 136, 136, 136),
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppThemes.textStyle
         ),
-        foregroundColor: const Color.fromARGB(255, 136, 136, 136),
+        foregroundColor: AppThemes.color4,
         centerTitle: true,
         actionsPadding: const EdgeInsets.only(right: 10),
-        actions: [
+        actions: <Widget>[
           IconButton(
             onPressed: () async {
               await filter();
-              if (!mounted) {
-                return;
-              }
+              if (!mounted) { return; }
               setState(() {});
             },
             icon: Icon(
               Icons.filter_alt,
-              color: const Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
+              color: AppThemes.color4,
+              fontWeight: FontWeight.bold
+            )
           ),
           IconButton(
             onPressed: () async {
@@ -67,15 +61,15 @@ class _GroupPageState extends State<GroupPage>
             },
             icon: const Icon(
               Icons.delete,
-              color: Color.fromARGB(255, 255, 140, 132),
+              color: AppThemes.color2,
               fontWeight: FontWeight.bold,
             ),
           ),
         ],
       ),
-      backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+      backgroundColor: AppThemes.color3,
       body: Container(
-        color: const Color.fromARGB(255, 234, 242, 252),
+        color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
@@ -99,9 +93,9 @@ class _GroupPageState extends State<GroupPage>
                       _groupService.updateIsExpenseSelected();
                       _groupService.indexList.clear();
                     }
-                  },
-                ),
-              ),
+                  }
+                )
+              )
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -112,17 +106,14 @@ class _GroupPageState extends State<GroupPage>
                     return SizedBox(
                       width: double.infinity,
                       child: Card(
-                        color: const Color.fromARGB(255, 210, 232, 236),
+                        color: AppThemes.color1,
                         child: Center(
                           child: Text(
                             "Nenhum gasto encontrado",
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 136, 136, 136),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
+                            style: AppThemes.textStyle
+                          )
+                        )
+                      )
                     );
                   }
                   return ListView.builder(
@@ -135,17 +126,17 @@ class _GroupPageState extends State<GroupPage>
                           expense: snapshot.data![index],
                           length: snapshot.data!.length,
                           setStateCallback: () => setState(() {}),
-                          thenFunction: thenFunction,
-                        ),
+                          thenFunction: thenFunction
+                        )
                       );
-                    },
+                    }
                   );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+                }
+              )
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -153,98 +144,50 @@ class _GroupPageState extends State<GroupPage>
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        backgroundColor: AppThemes.color3,
         title: Center(
           child: const Text(
             "Filtro",
-            style: TextStyle(
-              color: Color.fromARGB(255, 136, 136, 136),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+            style: AppThemes.textStyle
+          )
         ),
         content: Column(
           mainAxisSize: .min,
           spacing: 10,
           children: <Widget>[
             TextInput(
-              controller: month,
+              controller: _groupService.month,
               textHint: "Mês",
-              inputType: TextInputType.number,
+              inputType: TextInputType.number
             ),
             TextInput(
-              controller: year,
+              controller: _groupService.year,
               textHint: "Ano",
-              inputType: TextInputType.number,
+              inputType: TextInputType.number
             ),
             const SizedBox(height: 10),
-            Button(label: "Filtrar", height: 60, function: checkValues),
-          ],
-        ),
-      ),
+            Button(
+              label: "Filtrar", 
+              height: 60, 
+              function: () {
+                bool check = _groupService.checkGroupPageValues(
+                  context: context, 
+                  groupID: widget.groupID,
+                  closeDialog: closeDialog
+                );
+                if (!check || !mounted) { return; }
+                Navigator.pop(context);
+              } 
+            )
+          ]
+        )
+      )
     );
   }
 
-  void checkValues() {
-    if (month.text.isEmpty && year.text.isEmpty) {
-      updateFilter(getAllExpenses: true);
-      return;
-    }
-    if (month.text.isEmpty || year.text.isEmpty) {
-      showError(
-        context: context,
-        title: "Mês ou ano vazios",
-        content: "Todos os campos devem ser preenchidos",
-        closeDialog: closeDialog,
-      );
-      return;
-    }
-    if (int.parse(month.text) < 0 || int.parse(month.text) > 12) {
-      showError(
-        context: context,
-        title: "Mês inválido",
-        content: "O mês deve ser entre 1 e 12",
-        closeDialog: closeDialog,
-      );
-      return;
-    }
-    if (int.parse(year.text) < DateTime.now().year) {
-      showError(
-        context: context,
-        title: "Ano inválido",
-        content: "O ano não pode ser anterior a ${DateTime.now().year}",
-        closeDialog: closeDialog,
-      );
-      return;
-    }
-    updateFilter();
-  }
-
-  void updateFilter({bool? getAllExpenses}) async {
-    if (getAllExpenses != null) {
-      if (getAllExpenses) {
-        await _db.selectExpensesByGroup(groupID: widget.groupID);
-      }
-    } else {
-      await _db.selectExpensesByDate(
-        groupID: widget.groupID,
-        month: month.text,
-        year: year.text,
-      );
-    }
-
-    month.clear();
-    year.clear();
-
-    if (!mounted) {
-      return;
-    }
-    Navigator.pop(context);
-  }
-
   void closeDialog() {
-    month.clear();
-    year.clear();
+    _groupService.month.clear();
+    _groupService.year.clear();
     if (!mounted) {
       return;
     }
@@ -255,7 +198,7 @@ class _GroupPageState extends State<GroupPage>
     final response = await confirmDialog(
       context: context,
       title: "🚨  Atenção  🚨",
-      content: message,
+      content: message
     );
     return response;
   }
@@ -268,7 +211,7 @@ class _GroupPageState extends State<GroupPage>
     showColoredSnackBar(
       context: context,
       msm: message,
-      txtColor: const Color.fromARGB(255, 210, 232, 236),
+      txtColor: AppThemes.color1,
     );
     Navigator.pop(context);
   }
@@ -292,8 +235,8 @@ class _GroupPageState extends State<GroupPage>
 
   @override
   void dispose() {
-    month.dispose();
-    year.dispose();
+    _groupService.month.dispose();
+    _groupService.year.dispose();
     super.dispose();
   }
 }

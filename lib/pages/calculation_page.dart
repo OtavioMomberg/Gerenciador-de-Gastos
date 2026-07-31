@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/pages/expenses_calculated_page.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
+import 'package:gerenciador_gastos_v2/services/calculation_service.dart';
 import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
@@ -22,18 +21,14 @@ class CalculationPage extends StatefulWidget {
 }
 
 class _CalculationPageState extends State<CalculationPage> with ErrorDialog, ChangePage {
-  final _db = DatabaseService.instance();
   final _controller = ControllerUtils.instance();
   final _expansibleVariables = ExpansibleVariables.instance();
-  final day = TextEditingController();
-  final month = TextEditingController();
-  String result = "";
+  final _calculationService = CalculationService();
 
   @override
   void initState() {
     super.initState();
-
-    init();
+    _calculationService.init();
   }
 
   @override
@@ -93,7 +88,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                     )
                   ),
                   TextInput(
-                    controller: day,
+                    controller: _calculationService.day,
                     textHint: "Dia:",
                     inputType: TextInputType.number
                   )
@@ -110,7 +105,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                     )
                   ),
                   TextInput(
-                    controller: month,
+                    controller: _calculationService.month,
                     textHint: "Mês:",
                     inputType: TextInputType.number
                   )
@@ -120,9 +115,18 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
               Button(
                 label: "Calcular", 
                 height: 60,
-                function: checkData,
+                function: () async {
+                  final check = await _calculationService.checkData(
+                    context: context, 
+                    closeDialog: closeDialog
+                  );
+                  if (check) { 
+                    _calculationService.doCalculations();
+                    setState(() {});
+                  }
+                }
               ),
-              if (result.isNotEmpty)...[
+              if (_calculationService.result.isNotEmpty)...[
                 const SizedBox(height: 20),
                 const Text(
                   "Resultado",
@@ -141,8 +145,8 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                   ),
                   child: Center(
                     child: Text(
-                      !(result.startsWith("0") && result == "0") 
-                        ? "R\$ $result" 
+                      !(_calculationService.result.startsWith("0") && _calculationService.result == "0") 
+                        ? "R\$ ${_calculationService.result}" 
                         : "Sem gastos no ${_controller.expensePaymentMethod!.text}",
                       style: TextStyle(
                         color: AppThemes.color4,
@@ -159,14 +163,17 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                       child: Button(
                         label: "Ver gastos calculados",
                         height: 60,
-                        function: () => checkCalculatePage(),
+                        function: () => _calculationService.checkCalculatePage(context: context),
                       )
                     ),
                     Expanded(
                       child: Button(
                         label: "Limpar", 
                         height: 60,
-                        function: () => clearFields(),
+                        function: () {
+                          _calculationService.clearFields();
+                          setState(() {});
+                        }
                       )
                     )
                   ]
@@ -177,88 +184,6 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
         )
       )
     );
-  }
-
-  void init() {
-    _expansibleVariables.groupName = ExpansibleVariables.name;
-    _expansibleVariables.groupPayment = ExpansibleVariables.payment;
-
-    _controller.expenseGroupID = TextEditingController();
-    _controller.expensePaymentMethod = TextEditingController();
-    _controller.expansibleGroupIDController = ExpansibleController();
-    _controller.expansiblePaymentController = ExpansibleController();
-  }
-
-  void checkCalculatePage() {
-    String groupName = "";
-    for (var group in _db.groupsWithoutFuture) {
-      if (int.parse(_controller.expenseGroupID!.text) == group.id) {
-        groupName = group.name;
-        break;
-      }
-    }
-    if (groupName.isEmpty) { return; }
-
-    goNextPage(
-      context: context, 
-      index: 0, 
-      page: ExpensesCalculatedPage(
-        groupName: groupName, 
-        paymentMethod: _controller.expensePaymentMethod!.text, 
-        expenses: _db.expensesWithoutFuture
-      )
-    );
-  }
-  
-  void clearFields() {
-    result = "";
-    day.clear();
-    month.clear();
-    _controller.expenseGroupID!.clear();
-    _controller.expensePaymentMethod!.clear();
-    init();
-    setState(() {});
-  }
-
-  void checkData() async {
-    if (_controller.expenseGroupID!.text.isEmpty || _controller.expensePaymentMethod!.text.isEmpty) {
-      showError(
-        context: context, 
-        title: "🚨  Atenção  🚨", 
-        content: "Todos os campos devem ser preenchidos", 
-        closeDialog: closeDialog
-      );
-      return;
-    }
-
-    String? monthFormated;
-    String? dayFormated;
-
-    if (day.text.isNotEmpty && month.text.isNotEmpty) {
-      dayFormated = day.text;
-      monthFormated = month.text;
-    }
-
-    await _db.selectExpensesByGroupAndPaymentMethod(
-      groupID: int.parse(_controller.expenseGroupID!.text), 
-      paymentMethod: _controller.expensePaymentMethod!.text,
-      day: dayFormated,
-      month: monthFormated
-    );
-
-    dayFormated = null;
-    monthFormated = null;
-    doCalculations();
-  }
-
-  void doCalculations() {
-    double value = 0;
-    for (var expense in _db.expensesWithoutFuture) {
-      String price = expense.price.replaceAll(",", ".");
-      value += (double.parse(price) * 100);
-    }
-    result = (value / 100).toString();
-    setState(() {});
   }
 
   void closeDialog() {
@@ -272,8 +197,8 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
 
   @override
   void dispose() {
-    day.dispose();
-    month.dispose();
+    _calculationService.day.dispose();
+    _calculationService.month.dispose();
     _controller.expenseGroupID!.dispose();
     _controller.expensePaymentMethod!.dispose();
     _controller.expansibleGroupIDController!.dispose();

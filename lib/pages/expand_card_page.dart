@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/services/database_service.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/confirmation_dialog.dart';
@@ -10,7 +11,10 @@ import 'package:gerenciador_gastos_v2/widgets/text_button_colored.dart';
 class ExpandCardPage extends StatefulWidget {
   final int index;
 
-  const ExpandCardPage({required this.index, super.key});
+  const ExpandCardPage({
+    required this.index, 
+    super.key
+  });
 
   @override
   State<ExpandCardPage> createState() => _ExpandCardPageState();
@@ -26,21 +30,18 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        backgroundColor: AppThemes.color3,
         surfaceTintColor: Colors.transparent,
         title: Text(
           "Detalhes do Gasto",
-          style: TextStyle(
-            color: Color.fromARGB(255, 136, 136, 136),
-            fontWeight: FontWeight.bold
-          )
+          style: AppThemes.textStyle
         ),
-        foregroundColor: Color.fromARGB(255, 136, 136, 136)
+        foregroundColor: AppThemes.color4
       ),
-      backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+      backgroundColor: AppThemes.color3,
       body: Container(
         padding: const EdgeInsets.all(10),
-        color: const Color.fromARGB(255, 234, 242, 252),
+        color: AppThemes.color3,
         child: Column(
           spacing: 10,
           children: <Widget>[
@@ -48,23 +49,23 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
             Text(
               _db.expensesWithoutFuture[widget.index].name,
               style: TextStyle(
-                color: Color.fromARGB(255, 136, 136, 136),
+                color: AppThemes.color4,
                 fontSize: 20,
                 fontWeight: FontWeight.bold
               )
             ),
             Flexible(
               child: Material(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color.fromARGB(255, 210, 232, 236),
+                borderRadius: AppThemes.borderRadius,
+                color: AppThemes.color1,
                 elevation: 10,
-                shadowColor: const Color.fromARGB(255, 210, 232, 236),
+                shadowColor: AppThemes.color1,
                 child: Container(
                   height: size.height * 0.5,
                   padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 210, 232, 236)
+                    borderRadius: AppThemes.borderRadius,
+                    color: AppThemes.color1
                   ),
                   child: SingleChildScrollView(
                     child: Column(
@@ -72,39 +73,27 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                       children: <Widget>[
                         Text(
                           "Preço: R\$ ${_db.expensesWithoutFuture[widget.index].price}",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 136, 136, 136),
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppThemes.textStyle
                         ),
-                        const Divider(),
+                        const Divider(color: AppThemes.color4),
                         const SizedBox(height: 10),
                         Text(
                           "Forma de pagamento: ${_db.expensesWithoutFuture[widget.index].paymentMethod}",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 136, 136, 136),
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppThemes.textStyle
                         ),
-                        const Divider(),
+                        const Divider(color: AppThemes.color4),
                         const SizedBox(height: 10),
                         if (_db.expensesWithoutFuture[widget.index].paymentMethod == "Crédito") ...[
                           Text(
                             "Parcelas: ${_db.expensesWithoutFuture[widget.index].installments}",
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 136, 136, 136),
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppThemes.textStyle
                           ),
-                          const Divider(),
+                          const Divider(color: AppThemes.color4),
                           const SizedBox(height: 10),
                         ],
                         Text(
                           "Data de vencimento: ${_db.expensesWithoutFuture[widget.index].date}",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 136, 136, 136),
-                            fontWeight: FontWeight.bold
-                          )
+                          style: AppThemes.textStyle
                         )
                       ]
                     )
@@ -120,7 +109,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                   Expanded(
                     child: TextButtonColored(
                       icon: Icons.edit, 
-                      color: const Color.fromARGB(255, 136, 136, 136), 
+                      color: AppThemes.color4, 
                       label: "Editar", 
                       function: () => goNextPage(
                         context: context, 
@@ -137,7 +126,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
                   Expanded(
                     child: TextButtonColored(
                       icon: Icons.delete, 
-                      color: const Color.fromARGB(255, 255, 140, 132), 
+                      color: AppThemes.color2, 
                       label: "Deletar", 
                       function: () async {
                         final response = await confirmDialog(
@@ -177,7 +166,7 @@ with ConfirmationDialog, ShowColoredSnackBar, ChangePage {
     showColoredSnackBar(
       context: context,
       msm: "Gasto removido com sucesso!",
-      txtColor: const Color.fromARGB(255, 210, 232, 236),
+      txtColor: AppThemes.color1,
     );
     Navigator.pop<bool?>(context, true);
   }

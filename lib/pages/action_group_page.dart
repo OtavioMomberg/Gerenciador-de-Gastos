@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/group_read.dart';
-import 'package:gerenciador_gastos_v2/models/group_write.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/color_conversion.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
@@ -33,23 +32,12 @@ class ActionGroupPage extends StatefulWidget {
 class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, ShowColoredSnackBar {
   final _controller = ControllerUtils.instance();
   final _color = ColorConversion.instance();
-  final _db = DatabaseService.instance();
-
+  final _groupService = GroupService();
+  
   @override
   void initState() {
     super.initState();
-
-    initControllers();
-
-    if (widget.groupData != null && widget.action == ActionsEnum.update) {
-      getData();
-    }
-
-    if (_controller.groupName!.text.isNotEmpty && _controller.groupColor!.text.isNotEmpty) {
-      _color.cor = ColorConversion.colorsMap[_controller.groupColor!.text]!;
-    } else {
-      _color.cor = const Color.fromARGB(255, 234, 242, 252);
-    }
+    init();
   }
 
   @override
@@ -98,7 +86,14 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
               Button(
                 label: widget.action == ActionsEnum.update ? "Atualizar Grupo" : "Criar Grupo",
                 height: 60,
-                function: executeAction,
+                function: () {
+                  executeAction(
+                    isCreate: _groupService.checkGroupFields(
+                      context: context, 
+                      closeDialog: closeDialog
+                    )
+                  );
+                }
               ),
               const SizedBox(height: 5),
               ImageWidget(imagePath: SortImage.getImagePath()),
@@ -109,44 +104,47 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
     );
   }
 
-  void initControllers() {
-    _controller.getGroupControllers();
+  void init() {
+    _groupService.getGroupControllers();
+    
+    if (widget.groupData != null && widget.action == ActionsEnum.update) {
+      _groupService.getData(groupData: widget.groupData!);
+    }
+
+    if (_controller.groupName!.text.isNotEmpty && _controller.groupColor!.text.isNotEmpty) {
+      _color.cor = ColorConversion.colorsMap[_controller.groupColor!.text]!;
+    } else {
+      _color.cor = const Color.fromARGB(255, 234, 242, 252);
+    }
   }
 
-  void getData() {
-    _controller.groupName!.text = widget.groupData!.name;
-    _controller.groupColor!.text = widget.groupData!.color;
-    _controller.groupID!.text = widget.groupData!.id.toString();
+  void executeAction({required bool isCreate}) async {
+    if (isCreate) { 
+      _groupService.executeAction(isCreate: widget.action == ActionsEnum.create);
+      showResponse(isSuccess: true, isCreate: widget.action == ActionsEnum.create);
+      return;
+    }
+    showResponse(isSuccess: false);
   }
 
-  void executeAction() async {
-    if (_controller.checkGroupFields(context: context, closeDialog: closeDialog)) { 
-      final groupData = GroupWrite(
-        name: _controller.groupName!.text,
-        color: _controller.groupColor!.text,
-      );
-
-      final checkAction = widget.action == ActionsEnum.create;
-      checkAction
-        ? await _db.addGroup(groupData: groupData)
-        : await _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID!.text));
-
+  void showResponse({required bool isSuccess, bool? isCreate}) {
+    if (isSuccess) {
       if (!mounted) { return; }
       showColoredSnackBar(
-        context: context,
-        msm: checkAction
-          ? "Grupo criado com sucesso!"
-          : "Grupo atualizado com sucesso!",
+        context: context, 
+        msm: (isCreate ?? true) ? "Grupo adicionado com sucesso!" : "Grupo atualizado com sucesso!", 
         txtColor: const Color.fromARGB(255, 210, 232, 236)
       );
-      Navigator.pop(context);
+      (isCreate ?? true) ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
+
+      setState(() {});
       return;
     }
     showError(
-      context: context,
-      title: "⚠️  Erro  ⚠️",
-      content: "Nome ou Cor não informados.",
-      closeDialog: closeDialog,
+      context: context, 
+      title: "⚠️  Erro  ⚠️", 
+      content: "Nome ou Cor não informados.", 
+      closeDialog: closeDialog
     );
   }
 
@@ -157,7 +155,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
 
   @override
   void dispose() {
-    _controller.getGroupControllers();
+    _groupService.getGroupControllers();
 
     if (_controller.groupsList.isNotEmpty) {
       for (var group in _controller.groupsList) {

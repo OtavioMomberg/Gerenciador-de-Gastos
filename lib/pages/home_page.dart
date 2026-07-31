@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/pages/calculation_page.dart';
-import 'package:gerenciador_gastos_v2/services/group_service.dart';
+import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/pages/action_group_page.dart';
@@ -21,7 +21,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with ChangePage {
   final _db = DatabaseService.instance();
-  final groupService = GroupService.instance();
 
   @override
   void initState() {
@@ -35,15 +34,15 @@ class _HomePageState extends State<HomePage> with ChangePage {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+        backgroundColor: AppThemes.color3,
         surfaceTintColor: Colors.transparent,
         toolbarHeight: 0,
       ),
-      backgroundColor: const Color.fromARGB(255, 234, 242, 252),
+      backgroundColor: AppThemes.color3,
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        color: const Color.fromARGB(255, 234, 242, 252),
+        color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
@@ -60,24 +59,24 @@ class _HomePageState extends State<HomePage> with ChangePage {
                       label: "Criar Grupo",
                       height: 100,
                       navigation: navigation,
-                      page: ActionGroupPage(action: ActionsEnum.create),
-                    ),
+                      page: ActionGroupPage(action: ActionsEnum.create)
+                    )
                   ),
                   Expanded(
                     child: Button(
                       label: "Adicionar Gasto",
                       height: 100,
                       navigation: navigation,
-                      page: ActionExpensePage(action: ActionsEnum.create),
-                    ),
-                  ),
-                ],
+                      page: ActionExpensePage(action: ActionsEnum.create)
+                    )
+                  )
+                ]
               ),
               Button(
                 label: "Calcular Gastos",
                 height: 60,
                 navigation: navigation,
-                page: CalculationPage(),
+                page: CalculationPage()
               ),
               const SizedBox(height: 30),
               Column(
@@ -85,10 +84,10 @@ class _HomePageState extends State<HomePage> with ChangePage {
                   const Text(
                     "Meus Grupos",
                     style: TextStyle(
-                      color: Color.fromARGB(255, 136, 136, 136),
+                      color: AppThemes.color4,
                       fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
+                      fontWeight: FontWeight.bold
+                    )
                   ),
                   const SizedBox(height: 10),
                   Container(
@@ -101,12 +100,12 @@ class _HomePageState extends State<HomePage> with ChangePage {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
                           return Card(
-                            color: const Color.fromARGB(255, 210, 232, 236),
+                            color: AppThemes.color1,
                             child: Center(
                               child: Text(
                                 "Sem grupos criados",
                                 style: const TextStyle(
-                                  color: Color.fromARGB(255, 136, 136, 136),
+                                  color: AppThemes.color4,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold
                                 )
@@ -126,9 +125,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
                                 groupName: snapshot.data![index].name,
                                 width: (size.width - 30) * 0.5,
                                 onTap: () async {
-                                  await _db.selectExpensesByGroup(
-                                    groupID: snapshot.data![index].id,
-                                  );
+                                  await _db.selectExpensesByGroup(groupID: snapshot.data![index].id);
                                   navigation(
                                     page: GroupPage(
                                       groupID: snapshot.data![index].id,
@@ -140,12 +137,12 @@ class _HomePageState extends State<HomePage> with ChangePage {
                                   navigation(
                                     page: ActionGroupPage(
                                       action: ActionsEnum.update,
-                                      groupData: snapshot.data![index],
+                                      groupData: snapshot.data![index]
                                     ),
                                     index: index
                                   );
                                 }
-                              ),
+                              )
                             );
                           }
                         );
@@ -177,7 +174,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
       thenFunction: ({response}) async {
         await _db.selectGroups();
         setState(() {});
-      },
+      }
     );
   }
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciador_gastos_v2/services/expense_service.dart';
 import 'package:gerenciador_gastos_v2/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
 import 'package:gerenciador_gastos_v2/utils/mixins/show_snackbar.dart';
 import 'package:gerenciador_gastos_v2/models/expense_read.dart';
-import 'package:gerenciador_gastos_v2/models/expense_write.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
 import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
 import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/utils/group_options_enum.dart';
@@ -35,24 +34,12 @@ class ActionExpensePage extends StatefulWidget {
 class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredSnackBar, ErrorDialog {
   final _controller = ControllerUtils.instance();
   final _expansibleVariables = ExpansibleVariables.instance();
-  final _db = DatabaseService.instance();
+  final _expenseService = ExpenseService();
 
   @override
   void initState() {
     super.initState();
-
-    initControllers();
-
-    if (widget.expenseData == null && widget.action == ActionsEnum.create) {
-      if (_controller.expenseGroupID!.text.isEmpty) {
-        _expansibleVariables.groupName = ExpansibleVariables.name;
-        _expansibleVariables.groupDate = ExpansibleVariables.date;
-        _expansibleVariables.groupPayment = ExpansibleVariables.payment;
-      }
-    } else {
-      _controller.getExpenseData(expenseData: widget.expenseData!);
-    }
-    _expansibleVariables.buildYear(currentYear: DateTime.now().year);
+    init();
   }
 
   @override
@@ -127,7 +114,14 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
               Button(
                 label: widget.action == ActionsEnum.update ? "Atualizar" : "Adicionar", 
                 height: 60,
-                function: executeAction
+                function: () {
+                  executeAction(
+                    isCreate: _expenseService.checkExpenseFields(
+                      context: context, 
+                      closeDialog: closeDialog
+                    )
+                  );
+                }
               )
             ]
           )
@@ -136,66 +130,42 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
     );
   }
 
-  void initControllers() {
-    _controller.getExpenseControllers();
+  void init() {
+    _expenseService.getExpenseControllers();
+    
+    if (widget.expenseData == null && widget.action == ActionsEnum.create) {
+      if (_controller.expenseGroupID!.text.isEmpty) {
+        _expansibleVariables.groupName = ExpansibleVariables.name;
+        _expansibleVariables.groupDate = ExpansibleVariables.date;
+        _expansibleVariables.groupPayment = ExpansibleVariables.payment;
+      }
+    } else {
+      _expenseService.getExpenseData(expenseData: widget.expenseData!);
+    }
+    _expansibleVariables.buildYear(currentYear: DateTime.now().year);
   }
 
-  void executeAction() async {
-    if (_controller.checkExpenseFields(context: context, closeDialog: closeDialog)) {
-      final int installments = _controller.expenseInstallment!.text.isEmpty 
-        ? 1
-        : int.parse(_controller.expenseInstallment!.text);
-
-      final expenseData = ExpenseWrite(
-        name: _controller.expenseName!.text, 
-        price: _controller.expensePrice!.text, 
-        paymentMethod: _controller.expensePaymentMethod!.text, 
-        date: _controller.expenseDate!.text, 
-        installments: installments,
-        groupID: int.parse(_controller.expenseGroupID!.text)
+  void executeAction({required bool isCreate}) async {
+    if (isCreate) {
+      _expenseService.executeAction(
+        idList: [widget.expenseData!.id, widget.expenseData!.groupID], 
+        isCreate: widget.action == ActionsEnum.create
       );
+      showResponse(isSuccess: true, isCreate: widget.action == ActionsEnum.create);
+      return;
+    }
+    showResponse(isSuccess: false);
+  }
 
-      final check = widget.action == ActionsEnum.create;
-      if (expenseData.price.contains(".") || expenseData.price.contains(",")) {
-        expenseData.price = expenseData.price.replaceAll(".", "").replaceAll(",", "");
-      } else {
-        expenseData.price = (int.parse(expenseData.price) * 100).toString();
-      }
-      
-      expenseData.price = ((int.parse(expenseData.price) / expenseData.installments!) / 100).toStringAsFixed(2);
-
-      if (check) {
-        int firstDay = int.parse(expenseData.date.substring(0, 2));
-        for (int i=0; i<installments; i++) {
-          await _db.addExpense(expenseData: expenseData);
-          expenseData.increaseMonth(day: firstDay);
-          expenseData.decreaseInstallment();
-        }
-      } else {
-        if (expenseData.paymentMethod == "Crédito" && expenseData.installments != null) {
-          expenseData.installments = int.tryParse(_controller.expenseInstallment!.text);
-          await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
-
-          int firstDay = int.parse(expenseData.date.substring(0, 2));
-
-          for (int i=0; i<installments-1; i++) {
-            expenseData.increaseMonth(day: firstDay);
-            expenseData.decreaseInstallment();
-            await _db.addExpense(expenseData: expenseData);    
-          }
-        } else {
-          await _db.updateExpense(expenseData: expenseData, expenseID: widget.expenseData!.id);
-        }
-        await _db.selectExpensesByGroup(groupID: widget.expenseData!.groupID);
-      }
-
+  void showResponse({required bool isSuccess, bool? isCreate}) {
+    if (isSuccess) {
       if (!mounted) { return; }
       showColoredSnackBar(
-      context: context, 
-      msm: check ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
-      txtColor: const Color.fromARGB(255, 210, 232, 236)
+        context: context, 
+        msm: (isCreate ?? true) ? "Gasto adicionado com sucesso!" : "Gasto atualizado com sucesso!", 
+        txtColor: const Color.fromARGB(255, 210, 232, 236)
       );
-      check ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
+      (isCreate ?? true) ? Navigator.pop(context) : Navigator.pop<bool?>(context, true); 
 
       setState(() {});
       return;
@@ -215,7 +185,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
 
   @override
   void dispose() {
-    _controller.getExpenseControllers();
+    _expenseService.getExpenseControllers();
 
     if (_controller.expensesList.isNotEmpty) {
       for (var expense in _controller.expensesList) {

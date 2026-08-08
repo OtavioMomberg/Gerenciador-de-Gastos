@@ -93,6 +93,7 @@ class ExpansiblePaymentBody extends StatelessWidget {
             Button(
               label: "Confirmar", 
               height: 60,
+              icon: Icons.check,
               function: () => Navigator.pop(context)
             )
           ]

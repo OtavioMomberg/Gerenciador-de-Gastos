@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:gerenciador_gastos_v2/core/di/app_dependencies.dart';
 import 'package:gerenciador_gastos_v2/services/expense_service.dart';
 import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
@@ -50,15 +51,21 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
         backgroundColor: AppThemes.color3,
         foregroundColor: AppThemes.color4,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
       ),
       backgroundColor: AppThemes.color3,
       body: Container(
         color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SafeArea(
+          top: false,
           child: SingleChildScrollView(
             child: Column(
-              spacing: 20,
+              spacing: 15,
               children: <Widget>[
                 Text(
                   widget.action == ActionsEnum.update ? "Atualizar Gasto" : "Adicionar Gasto",
@@ -78,18 +85,19 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                   textHint: "Preço:",
                   inputType: TextInputType.number
                 ),
-                ExpansibleWidget(
-                  controller: _controller.expansiblePaymentController!,
-                  header: ExpansiblePaymentHeader(
+                if (widget.action == ActionsEnum.create)
+                  ExpansibleWidget(
                     controller: _controller.expansiblePaymentController!,
-                    setStateCallback: () => setState((){})
+                    header: ExpansiblePaymentHeader(
+                      controller: _controller.expansiblePaymentController!,
+                      setStateCallback: () => setState((){})
+                    ),
+                    body: ExpansiblePaymentBody(
+                      controller: _controller.expansiblePaymentController!,
+                      paymentList: _expansibleVariables.paymentMethods,
+                      setStateCallback: () => setState(() {})
+                    )
                   ),
-                  body: ExpansiblePaymentBody(
-                    controller: _controller.expansiblePaymentController!,
-                    paymentList: _expansibleVariables.paymentMethods,
-                    setStateCallback: () => setState(() {})
-                  )
-                ),
                 ExpansibleWidget(
                   controller: _controller.expansibleDateController!,
                   header: ExpansibleDateHeader(
@@ -114,9 +122,11 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                       setStateCallback: () => setState((){})
                     ),
                   ),
+                const SizedBox(height: 5),
                 Button(
                   label: widget.action == ActionsEnum.update ? "Atualizar" : "Adicionar", 
                   height: 60,
+                  icon: widget.action == ActionsEnum.update ? Icons.edit_outlined : Icons.add_circle_outline,
                   function: () {
                     executeAction(
                       isCreate: _expenseService.checkExpenseFields(
@@ -128,7 +138,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
                 )
               ]
             )
-          ),
+          )
         )
       )
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gerenciador_gastos_v2/models/expense_read.dart';
 import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/presentation/widgets/general_info_card.dart';
@@ -22,6 +23,11 @@ class ExpensesCalculatedPage extends StatelessWidget {
         backgroundColor: AppThemes.color3,
         foregroundColor: AppThemes.color4,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
       ),
       backgroundColor: AppThemes.color3,
       body: Container(
@@ -30,6 +36,7 @@ class ExpensesCalculatedPage extends StatelessWidget {
         color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SafeArea(
+          top: false,
           child: Column(
             spacing: 10,
             children: <Widget>[

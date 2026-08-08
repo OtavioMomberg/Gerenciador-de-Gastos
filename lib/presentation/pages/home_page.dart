@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
         toolbarHeight: 0,
         systemOverlayStyle: const SystemUiOverlayStyle(
           systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
       ),
@@ -54,6 +55,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
         color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SafeArea(
+          top: false,
           child: SingleChildScrollView(
             child: Column(
               spacing: 15,
@@ -77,10 +79,10 @@ class _HomePageState extends State<HomePage> with ChangePage {
                         label: "Adicionar Gasto",
                         height: 100,
                         navigation: navigation,
-                        page: ActionExpensePage(action: ActionsEnum.create),
-                      ),
-                    ),
-                  ],
+                        page: ActionExpensePage(action: ActionsEnum.create)
+                      )
+                    )
+                  ]
                 ),
                 Button(
                   label: "Calcular Gastos",
@@ -181,7 +183,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
     await widget.db.selectGroups();
   }
 
-  void navigation({required Widget page, int? index = 0}) {
+  void navigation({required Widget page, int index = 0}) {
     if (widget.db.groupsWithoutFuture.isEmpty &&
         page.runtimeType != ActionGroupPage) {
       return;
@@ -189,7 +191,7 @@ class _HomePageState extends State<HomePage> with ChangePage {
 
     goNextPage(
       context: context,
-      index: index ?? 0,
+      index: index,
       page: page,
       thenFunction: ({response}) async {
         await widget.db.selectGroups();

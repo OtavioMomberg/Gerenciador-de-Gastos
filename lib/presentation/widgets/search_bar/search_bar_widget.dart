@@ -8,7 +8,7 @@ import 'package:gerenciador_gastos_v2/presentation/widgets/search_bar/options_vi
 
 class SearchBarWidget extends StatelessWidget {
   final DatabaseController db;
-  final void Function({required Widget page, int? index}) navigation;
+  final void Function({required Widget page, int index}) navigation;
 
   const SearchBarWidget({
     required this.db,

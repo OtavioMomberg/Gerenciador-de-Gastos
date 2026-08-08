@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gerenciador_gastos_v2/core/utils/expansible_variables.dart';
 import 'package:gerenciador_gastos_v2/presentation/pages/action_expense_page.dart';
 import 'package:gerenciador_gastos_v2/controllers/database_controller.dart';
@@ -34,14 +35,20 @@ class _ExpandCardPageState extends State<ExpandCardPage>
       appBar: AppBar(
         backgroundColor: AppThemes.color3,
         surfaceTintColor: Colors.transparent,
-        title: Text("Detalhes do Gasto", style: AppThemes.textStyle),
+        title: const Text("Detalhes do Gasto", style: AppThemes.textStyle),
         foregroundColor: AppThemes.color4,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
       ),
       backgroundColor: AppThemes.color3,
       body: Container(
         padding: const EdgeInsets.all(10),
         color: AppThemes.color3,
         child: SafeArea(
+          top: false,
           child: Column(
             spacing: 10,
             children: <Widget>[
@@ -62,12 +69,7 @@ class _ExpandCardPageState extends State<ExpandCardPage>
                   shadowColor: AppThemes.color1,
                   child: Container(
                     height: size.height * 0.5,
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      left: 10,
-                      right: 10,
-                      bottom: 10,
-                    ),
+                    padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
                     decoration: BoxDecoration(
                       borderRadius: AppThemes.borderRadius,
                       color: AppThemes.color1,

@@ -4,11 +4,8 @@ import 'package:gerenciador_gastos_v2/presentation/widgets/text_with_divider.dar
 
 class GeneralInfoCard extends StatelessWidget {
   final List<String> infoList;
-  
-  const GeneralInfoCard({
-    required this.infoList,
-    super.key
-  });
+
+  const GeneralInfoCard({required this.infoList, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +21,9 @@ class GeneralInfoCard extends StatelessWidget {
         child: Column(
           children: <Widget>[
             ...List.generate(infoList.length, (index) {
-              return TextWithDivider(content: infoList[index]);
+              return index == infoList.length - 1
+                ? TextWithDivider(content: infoList[index], useDivider: false)
+                : TextWithDivider(content: infoList[index]);
             })
           ]
         )

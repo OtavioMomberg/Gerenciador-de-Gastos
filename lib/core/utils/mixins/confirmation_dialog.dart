@@ -43,6 +43,7 @@ mixin ConfirmationDialog {
               child: Button(
                 label: "Sim", 
                 height: 50,
+                icon: Icons.check,
                 function: () {
                   response = true;
                   Navigator.pop<bool>(context, response);
@@ -55,6 +56,7 @@ mixin ConfirmationDialog {
               child: Button(
                 label: "Não", 
                 height: 50,
+                icon: Icons.close,
                 function: () {
                   response = false;
                   Navigator.pop<bool>(context, response);

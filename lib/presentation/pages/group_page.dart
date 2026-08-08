@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/core/utils/mixins/change_page.dart';
@@ -44,6 +45,11 @@ class _GroupPageState extends State<GroupPage>
         title: const Text("Meus Gastos", style: AppThemes.textStyle),
         foregroundColor: AppThemes.color4,
         centerTitle: true,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         actionsPadding: const EdgeInsets.only(right: 10),
         actions: <Widget>[
           IconButton(
@@ -82,6 +88,7 @@ class _GroupPageState extends State<GroupPage>
         color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SafeArea(
+          top: false,
           child: Column(
             children: <Widget>[
               IgnorePointer(
@@ -93,6 +100,7 @@ class _GroupPageState extends State<GroupPage>
                   child: Button(
                     label: "Apagar Selecionados",
                     height: 60,
+                    icon: Icons.delete,
                     function: () async {
                       final message =
                           "Tem certeza que deseja apagar esses gastos?";
@@ -176,6 +184,7 @@ class _GroupPageState extends State<GroupPage>
             Button(
               label: "Filtrar",
               height: 60,
+              icon: Icons.filter_alt,
               function: () {
                 bool check = widget.groupService.checkGroupPageValues(
                   context: context,

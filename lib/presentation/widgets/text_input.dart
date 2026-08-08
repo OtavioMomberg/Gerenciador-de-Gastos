@@ -19,7 +19,7 @@ class TextInput extends StatelessWidget {
       controller: controller,
       keyboardType: inputType,
       cursorColor: AppThemes.color4,
-      style: AppThemes.textStyle2,
+      style: AppThemes.textStyle,
       decoration: InputDecoration(
         hint: Text(
           textHint,

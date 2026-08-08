@@ -4,6 +4,7 @@ import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
 class Button extends StatelessWidget {
   final String label;
   final double height;
+  final IconData? icon;
   final VoidCallback? function;
   final void Function({required Widget page})? navigation;
   final Widget? page;
@@ -11,6 +12,7 @@ class Button extends StatelessWidget {
   const Button({
     required this.label,
     required this.height,
+    this.icon,
     this.function,
     this.navigation,
     this.page,
@@ -43,9 +45,17 @@ class Button extends StatelessWidget {
             border: Border.all(color: AppThemes.color1),
           ),
           child: Center(
-            child: Text(
-              label,
-              style: AppThemes.textStyle
+            child: Row(
+              mainAxisAlignment: .center,
+              spacing: 5,
+              children: <Widget>[
+                if (icon != null)
+                  Icon(icon,  color: AppThemes.color4),
+                Text(
+                  label,
+                  style: AppThemes.textStyle
+                ),
+              ]
             )
           )
         )

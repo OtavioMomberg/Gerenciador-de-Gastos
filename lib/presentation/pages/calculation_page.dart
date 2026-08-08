@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:gerenciador_gastos_v2/core/di/app_dependencies.dart';
 import 'package:gerenciador_gastos_v2/services/calculation_service.dart';
 import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
@@ -42,7 +43,12 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
         title: const Text(
           "Calcule seus Gastos",
           style: AppThemes.textStyle
-        )
+        ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
       ),
       backgroundColor: AppThemes.color3,
       body: Container(
@@ -51,11 +57,11 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
         color: AppThemes.color3,
         padding: const EdgeInsets.all(10),
         child: SafeArea(
+          top: false,
           child: SingleChildScrollView(
             child: Column(
               spacing: 10,
               children: <Widget>[
-                const SizedBox(height: 40),
                 ExpansibleWidget(
                   header: ExpansibleIdHeader(
                     controller: _controller.expansibleGroupIDController!, 
@@ -130,7 +136,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                   }
                 ),
                 if (_calculationService.result.isNotEmpty)...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   const Text(
                     "Resultado",
                     style: TextStyle(
@@ -164,8 +170,9 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                     children: <Widget>[
                       Expanded(
                         child: Button(
-                          label: "Ver gastos calculados",
+                          label: "Ver gastos",
                           height: 60,
+                          icon: Icons.receipt_long_outlined,
                           function: () => _calculationService.checkCalculatePage(context: context),
                         )
                       ),
@@ -173,6 +180,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                         child: Button(
                           label: "Limpar", 
                           height: 60,
+                          icon: Icons.cleaning_services_outlined,
                           function: () {
                             _calculationService.clearFields();
                             setState(() {});
@@ -180,7 +188,8 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                         )
                       )
                     ]
-                  )  
+                  ),
+                  const SizedBox(height: 10)  
                 ]
               ]
             )

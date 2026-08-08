@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:gerenciador_gastos_v2/services/group_service.dart';
 import 'package:gerenciador_gastos_v2/presentation/themes/app_themes.dart';
 import 'package:gerenciador_gastos_v2/core/utils/mixins/show_error.dart';
@@ -47,9 +48,15 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
         backgroundColor: AppThemes.color3,
         foregroundColor: AppThemes.color4,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarColor: AppThemes.color3,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
       ),
       backgroundColor: AppThemes.color3,
       body: SafeArea(
+        top: false,
         child: Container(
           height: double.infinity,
           width: double.infinity,
@@ -83,10 +90,11 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
                     setStateCallback: () => setState(() {}),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Button(
                   label: widget.action == ActionsEnum.update ? "Atualizar Grupo" : "Criar Grupo",
                   height: 60,
+                  icon: widget.action == ActionsEnum.update ? Icons.edit_outlined : Icons.add_box_outlined,
                   function: () {
                     executeAction(
                       isCreate: _groupService.checkGroupFields(

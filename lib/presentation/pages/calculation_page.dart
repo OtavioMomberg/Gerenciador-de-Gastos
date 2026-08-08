@@ -62,6 +62,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
             child: Column(
               spacing: 10,
               children: <Widget>[
+                const SizedBox(height: 5),
                 ExpansibleWidget(
                   header: ExpansibleIdHeader(
                     controller: _controller.expansibleGroupIDController!, 
@@ -189,7 +190,7 @@ class _CalculationPageState extends State<CalculationPage> with ErrorDialog, Cha
                       )
                     ]
                   ),
-                  const SizedBox(height: 10)  
+                  const SizedBox(height: 15)  
                 ]
               ]
             )

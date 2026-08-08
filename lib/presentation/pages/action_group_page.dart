@@ -61,7 +61,7 @@ class _ActionGroupPageState extends State<ActionGroupPage> with ErrorDialog, Sho
           height: double.infinity,
           width: double.infinity,
           color: AppThemes.color3,
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
           child: SingleChildScrollView(
             child: Column(
               spacing: 15,

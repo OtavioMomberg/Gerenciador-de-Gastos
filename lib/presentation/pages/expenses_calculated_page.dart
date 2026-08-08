@@ -34,11 +34,11 @@ class ExpensesCalculatedPage extends StatelessWidget {
         height: double.infinity,
         width: double.infinity,
         color: AppThemes.color3,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
         child: SafeArea(
           top: false,
           child: Column(
-            spacing: 10,
+            spacing: 5,
             children: <Widget>[
               const Text(
                 "Informaçoes Gerais",
@@ -48,14 +48,13 @@ class ExpensesCalculatedPage extends StatelessWidget {
                   fontWeight: FontWeight.bold
                 )
               ),
-              const SizedBox(height: 10),
               GeneralInfoCard(
                 infoList: <String>[
                   "\nNome do Grupo: $groupName\n",
                   "\nMétodo de Pagamento: $paymentMethod\n",
                   "\nQuantidade de Gastos: ${expenses.length}\n"
                 ]
-              ),
+              ),  
               const SizedBox(height: 10),
               const Text(
                 "Gastos",
@@ -83,8 +82,8 @@ class ExpensesCalculatedPage extends StatelessWidget {
                             )
                           ),
                           title: Text(
-                            "${expenses[index].name}      R\$ ${expenses[index].price}\n\nData de Validade: ${expenses[index].date}",
-                            style: AppThemes.textStyle
+                            "${expenses[index].name}\t\tR\$ ${expenses[index].price}\n\nData de Validade: ${expenses[index].date}",
+                            style: AppThemes.textStyle2
                           )
                         )
                       )

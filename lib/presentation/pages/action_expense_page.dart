@@ -60,7 +60,7 @@ class _ActionExpensePageState extends State<ActionExpensePage> with ShowColoredS
       backgroundColor: AppThemes.color3,
       body: Container(
         color: AppThemes.color3,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
         child: SafeArea(
           top: false,
           child: SingleChildScrollView(

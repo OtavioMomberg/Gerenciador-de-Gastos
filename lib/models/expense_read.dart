@@ -1,4 +1,4 @@
-import 'package:gerenciador_gastos_v2/database/db_columns_info.dart';
+import 'package:gerenciador_gastos_v2/core/constants/db_columns_info.dart';
 
 class ExpenseRead {
   final int id;

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciador_gastos_v2/models/group_read.dart';
 import 'package:gerenciador_gastos_v2/models/group_write.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
-import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
-import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
-//import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
+import 'package:gerenciador_gastos_v2/controllers/database_controller.dart';
+import 'package:gerenciador_gastos_v2/core/utils/controllers_utils.dart';
+import 'package:gerenciador_gastos_v2/core/utils/mixins/show_error.dart';
 
 class GroupService with ErrorDialog {
   bool _isExpenseSelected = false;
   int? _cardIndex;
   late GroupWrite groupData;
   final List<int> _indexList = [];
-  TextEditingController month = TextEditingController();
-  TextEditingController year = TextEditingController();
+  TextEditingController? _month;
+  TextEditingController? _year;
 
   GroupService();
 
@@ -21,18 +20,27 @@ class GroupService with ErrorDialog {
   factory GroupService.instance() => _instance;
 
   final _controller = ControllerUtils.instance();
-  final _db = DatabaseService.instance();
-  //final _expansibleVariables = ExpansibleVariables.instance();
+  final _db = DatabaseController.instance();
 
+  TextEditingController get month => _month!;
+  TextEditingController get year => _year!;
   bool get isExpenseSelected => _isExpenseSelected;
   int? get cardIndex => _cardIndex;
   List<int> get indexList => _indexList;
 
+  void initControllers() {
+    _month = TextEditingController();
+    _year = TextEditingController();
+  }
+
   void executeAction({required bool isCreate}) async {
-      buildGroupWriteObject();
-      isCreate
+    buildGroupWriteObject();
+    isCreate
         ? await _db.addGroup(groupData: groupData)
-        : await _db.updateGroup(groupData: groupData, groupID: int.parse(_controller.groupID!.text));  
+        : await _db.updateGroup(
+            groupData: groupData,
+            groupID: int.parse(_controller.groupID!.text),
+          );
   }
 
   void getGroupControllers() {
@@ -40,14 +48,23 @@ class GroupService with ErrorDialog {
 
     _controller.groupsList.add(_controller.groupID = TextEditingController());
     _controller.groupsList.add(_controller.groupName = TextEditingController());
-    _controller.groupsList.add(_controller.groupColor = TextEditingController());
-    
+    _controller.groupsList.add(
+      _controller.groupColor = TextEditingController(),
+    );
+
     _controller.expansibleColorController = ExpansibleController();
   }
 
-  bool checkGroupFields({required BuildContext context, required VoidCallback closeDialog}) {
-    if (_controller.groupName!.text.isEmpty) { return false; }
-    if (_controller.groupColor!.text.isEmpty) { return false; }
+  bool checkGroupFields({
+    required BuildContext context,
+    required VoidCallback closeDialog,
+  }) {
+    if (_controller.groupName!.text.isEmpty) {
+      return false;
+    }
+    if (_controller.groupColor!.text.isEmpty) {
+      return false;
+    }
 
     if (!_controller.groupName!.text[0].contains(RegExp("[aA-zZ]"))) {
       showError(
@@ -119,15 +136,15 @@ class GroupService with ErrorDialog {
   }
 
   bool checkGroupPageValues({
-    required BuildContext context, 
+    required BuildContext context,
     required int groupID,
-    required VoidCallback closeDialog
+    required VoidCallback closeDialog,
   }) {
-    if (month.text.isEmpty && year.text.isEmpty) {
+    if (_month!.text.isEmpty && _year!.text.isEmpty) {
       updateFilter(groupID: groupID, getAllExpenses: true);
       return true;
     }
-    if (month.text.isEmpty || year.text.isEmpty) {
+    if (_month!.text.isEmpty || _year!.text.isEmpty) {
       showError(
         context: context,
         title: "Mês ou ano vazios",
@@ -136,7 +153,7 @@ class GroupService with ErrorDialog {
       );
       return false;
     }
-    if (int.parse(month.text) < 0 || int.parse(month.text) > 12) {
+    if (int.parse(_month!.text) < 0 || int.parse(_month!.text) > 12) {
       showError(
         context: context,
         title: "Mês inválido",
@@ -145,7 +162,7 @@ class GroupService with ErrorDialog {
       );
       return false;
     }
-    if (int.parse(year.text) < DateTime.now().year) {
+    if (int.parse(_year!.text) < DateTime.now().year) {
       showError(
         context: context,
         title: "Ano inválido",
@@ -166,13 +183,15 @@ class GroupService with ErrorDialog {
     } else {
       await _db.selectExpensesByDate(
         groupID: groupID,
-        month: month.text,
-        year: year.text,
+        month: _month!.text,
+        year: _year!.text,
       );
     }
 
-    month.clear();
-    year.clear();
-    if (getAllExpenses != null) { getAllExpenses = null; }
+    _month!.clear();
+    _year!.clear();
+    if (getAllExpenses != null) {
+      getAllExpenses = null;
+    }
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciador_gastos_v2/pages/expenses_calculated_page.dart';
-import 'package:gerenciador_gastos_v2/services/database_service.dart';
-import 'package:gerenciador_gastos_v2/utils/controllers_utils.dart';
-import 'package:gerenciador_gastos_v2/utils/expansible_variables.dart';
-import 'package:gerenciador_gastos_v2/utils/mixins/change_page.dart';
-import 'package:gerenciador_gastos_v2/utils/mixins/show_error.dart';
+import 'package:gerenciador_gastos_v2/presentation/pages/expenses_calculated_page.dart';
+import 'package:gerenciador_gastos_v2/controllers/database_controller.dart';
+import 'package:gerenciador_gastos_v2/core/utils/controllers_utils.dart';
+import 'package:gerenciador_gastos_v2/core/utils/expansible_variables.dart';
+import 'package:gerenciador_gastos_v2/core/utils/mixins/change_page.dart';
+import 'package:gerenciador_gastos_v2/core/utils/mixins/show_error.dart';
 
 class CalculationService with ChangePage, ErrorDialog {
   String result = "";
@@ -12,7 +12,7 @@ class CalculationService with ChangePage, ErrorDialog {
   final month = TextEditingController();
   final _controller = ControllerUtils.instance();
   final _expansibleVariables = ExpansibleVariables.instance();
-  final _db = DatabaseService.instance();
+  final _db = DatabaseController.instance();
 
   void init() {
     _expansibleVariables.groupName = ExpansibleVariables.name;
@@ -32,19 +32,21 @@ class CalculationService with ChangePage, ErrorDialog {
         break;
       }
     }
-    if (groupName.isEmpty) { return; }
+    if (groupName.isEmpty) {
+      return;
+    }
 
     goNextPage(
-      context: context, 
-      index: 0, 
+      context: context,
+      index: 0,
       page: ExpensesCalculatedPage(
-        groupName: groupName, 
-        paymentMethod: _controller.expensePaymentMethod!.text, 
-        expenses: _db.expensesWithoutFuture
-      )
+        groupName: groupName,
+        paymentMethod: _controller.expensePaymentMethod!.text,
+        expenses: _db.expensesWithoutFuture,
+      ),
     );
   }
-  
+
   void clearFields() {
     result = "";
     day.clear();
@@ -54,13 +56,17 @@ class CalculationService with ChangePage, ErrorDialog {
     init();
   }
 
-  Future<bool> checkData({required BuildContext context, required VoidCallback closeDialog}) async {
-    if (_controller.expenseGroupID!.text.isEmpty || _controller.expensePaymentMethod!.text.isEmpty) {
+  Future<bool> checkData({
+    required BuildContext context,
+    required VoidCallback closeDialog,
+  }) async {
+    if (_controller.expenseGroupID!.text.isEmpty ||
+        _controller.expensePaymentMethod!.text.isEmpty) {
       showError(
-        context: context, 
-        title: "🚨  Atenção  🚨", 
-        content: "Todos os campos devem ser preenchidos", 
-        closeDialog: closeDialog
+        context: context,
+        title: "🚨  Atenção  🚨",
+        content: "Todos os campos devem ser preenchidos",
+        closeDialog: closeDialog,
       );
       return false;
     }
@@ -74,10 +80,10 @@ class CalculationService with ChangePage, ErrorDialog {
     }
 
     await _db.selectExpensesByGroupAndPaymentMethod(
-      groupID: int.parse(_controller.expenseGroupID!.text), 
+      groupID: int.parse(_controller.expenseGroupID!.text),
       paymentMethod: _controller.expensePaymentMethod!.text,
       day: dayFormated,
-      month: monthFormated
+      month: monthFormated,
     );
 
     dayFormated = null;
